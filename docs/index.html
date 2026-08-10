@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 郵件智慧決策助理 — 系統說明文件</title>
+<style>
+/* ───────────────────────── 設計 token ─────────────────────────
+   色彩沿用 app/theme.py，讓文件與系統本身視覺一致。
+   淺色為基準，深色只覆寫 token。                                */
+:root{
+  --bg:#f4f6f8; --surface:#ffffff; --surface-alt:#fafbfc; --code-bg:#f1f4f8;
+  --border:#e3e8ef; --border-strong:#cdd5e0;
+  --text:#1b2434; --text-2:#5a6b85; --text-muted:#8b99ae;
+  --primary:#2563eb; --primary-soft:#eff4ff; --primary-border:#bfd3fe;
+  --danger:#dc2626; --danger-soft:#fef0f0;
+  --warning:#ea8a0b; --warning-soft:#fff6e9;
+  --success:#12945f; --success-soft:#eaf7f1;
+  --purple:#7c4deb; --purple-soft:#f4f0fe; --purple-border:#dccffb;
+  --radius:10px; --radius-sm:6px;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.06);
+  --sidebar-w:250px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]){
+    --bg:#12161d; --surface:#181d26; --surface-alt:#1d232e; --code-bg:#11151c;
+    --border:#2a323f; --border-strong:#3a4453;
+    --text:#e8edf4; --text-2:#a9b6c8; --text-muted:#78869a;
+    --primary:#5b8dff; --primary-soft:#1a2740; --primary-border:#31456b;
+    --danger:#f87171; --danger-soft:#33191b;
+    --warning:#f0a13c; --warning-soft:#332510;
+    --success:#3ec48c; --success-soft:#122c22;
+    --purple:#a685f5; --purple-soft:#241d3a; --purple-border:#3d3163;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 1px 3px rgba(0,0,0,.2);
+  }
+}
+:root[data-theme=dark]{
+  --bg:#12161d; --surface:#181d26; --surface-alt:#1d232e; --code-bg:#11151c;
+  --border:#2a323f; --border-strong:#3a4453;
+  --text:#e8edf4; --text-2:#a9b6c8; --text-muted:#78869a;
+  --primary:#5b8dff; --primary-soft:#1a2740; --primary-border:#31456b;
+  --danger:#f87171; --danger-soft:#33191b;
+  --warning:#f0a13c; --warning-soft:#332510;
+  --success:#3ec48c; --success-soft:#122c22;
+  --purple:#a685f5; --purple-soft:#241d3a; --purple-border:#3d3163;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 1px 3px rgba(0,0,0,.2);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:20px}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:"Inter","Noto Sans TC",-apple-system,BlinkMacSystemFont,
+              "Segoe UI","Microsoft JhengHei",sans-serif;
+  line-height:1.75; font-size:15px; overflow-x:hidden;
+}
+
+/* ───────────────────────── 版面 ───────────────────────── */
+.wrap{display:flex; align-items:flex-start; max-width:1400px; margin:0 auto}
+
+nav{
+  position:sticky; top:0; flex:0 0 var(--sidebar-w); width:var(--sidebar-w);
+  height:100vh; overflow-y:auto; padding:28px 16px 40px;
+  border-right:1px solid var(--border); background:var(--surface);
+}
+nav .brand{display:flex; align-items:center; gap:10px; margin-bottom:4px}
+nav .mark{
+  width:32px; height:32px; border-radius:var(--radius-sm); background:var(--primary);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+nav h1{font-size:15px; margin:0; line-height:1.3; font-weight:700}
+nav .sub{font-size:11px; color:var(--text-muted); margin:0 0 20px 42px; letter-spacing:.3px}
+nav a{
+  display:block; padding:6px 10px; margin-bottom:1px; border-radius:var(--radius-sm);
+  color:var(--text-2); text-decoration:none; font-size:13.5px;
+  border-left:2px solid transparent;
+}
+nav a:hover{background:var(--bg); color:var(--text)}
+nav a.active{background:var(--primary-soft); color:var(--primary); font-weight:600; border-left-color:var(--primary)}
+nav .grp{
+  font-size:10.5px; font-weight:700; color:var(--text-muted); letter-spacing:.8px;
+  padding:0 10px; margin:18px 0 6px; text-transform:uppercase;
+}
+
+main{flex:1; min-width:0; padding:36px 40px 100px}
+section{scroll-margin-top:20px; margin-bottom:52px}
+
+/* ───────────────────────── 文字 ───────────────────────── */
+h2{
+  font-size:24px; margin:0 0 6px; font-weight:700; letter-spacing:-.2px;
+  padding-bottom:10px; border-bottom:1px solid var(--border);
+}
+h3{font-size:16.5px; margin:30px 0 10px; font-weight:700}
+h4{font-size:14px; margin:22px 0 8px; font-weight:700; color:var(--text-2)}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 14px; padding-left:22px}
+li{margin-bottom:5px}
+a{color:var(--primary)}
+strong{font-weight:700}
+.lead{font-size:16px; color:var(--text-2); margin-bottom:26px}
+
+code{
+  font-family:ui-monospace,SFMono-Regular,"Cascadia Mono",Consolas,monospace;
+  font-size:.875em; background:var(--code-bg); padding:2px 6px;
+  border-radius:4px; border:1px solid var(--border); white-space:nowrap;
+}
+pre{
+  background:var(--code-bg); border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px 16px; overflow-x:auto; margin:0 0 16px; line-height:1.65;
+}
+pre code{background:none; border:none; padding:0; font-size:12.5px; white-space:pre}
+
+/* ───────────────────────── 元件 ───────────────────────── */
+.card{
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow:var(--shadow); padding:18px 20px; margin:0 0 18px;
+}
+.note{
+  border-left:3px solid var(--primary); background:var(--primary-soft);
+  border-radius:var(--radius-sm); padding:12px 16px; margin:0 0 18px; font-size:14px;
+}
+.note.warn{border-left-color:var(--warning); background:var(--warning-soft)}
+.note.danger{border-left-color:var(--danger); background:var(--danger-soft)}
+.note.ok{border-left-color:var(--success); background:var(--success-soft)}
+.note .t{font-weight:700; display:block; margin-bottom:4px; font-size:13px}
+
+.tbl-wrap{overflow-x:auto; margin:0 0 18px; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:480px}
+th,td{border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top}
+th{background:var(--surface-alt); font-weight:700; white-space:nowrap}
+td code{white-space:nowrap}
+
+.pill{
+  display:inline-block; font-size:11px; font-weight:600; padding:2px 9px;
+  border-radius:999px; border:1px solid; line-height:1.6; white-space:nowrap;
+}
+.pill.blue{color:var(--primary); background:var(--primary-soft); border-color:var(--primary-border)}
+.pill.purple{color:var(--purple); background:var(--purple-soft); border-color:var(--purple-border)}
+.pill.warn{color:var(--warning); background:var(--warning-soft); border-color:var(--warning)}
+.pill.ok{color:var(--success); background:var(--success-soft); border-color:var(--success)}
+.pill.gray{color:var(--text-muted); background:var(--surface-alt); border-color:var(--border-strong)}
+
+.grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); margin-bottom:18px}
+.stat{background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--primary);
+      border-radius:var(--radius); padding:14px 16px}
+.stat .k{font-size:12px; color:var(--text-2); font-weight:600}
+.stat .v{font-size:26px; font-weight:700; line-height:1.2; margin:2px 0}
+.stat .d{font-size:11.5px; color:var(--text-muted)}
+
+figure{margin:0 0 20px}
+figure svg{width:100%; height:auto; display:block;
+           background:var(--surface); border:1px solid var(--border); border-radius:var(--radius)}
+figcaption{font-size:12px; color:var(--text-muted); text-align:center; margin-top:8px}
+
+.toggle{
+  position:fixed; top:16px; right:20px; z-index:50; cursor:pointer;
+  background:var(--surface); border:1px solid var(--border-strong);
+  border-radius:var(--radius-sm); padding:6px 12px; font-size:12px;
+  color:var(--text-2); font-family:inherit;
+}
+.toggle:hover{background:var(--bg)}
+
+footer{border-top:1px solid var(--border); padding-top:20px; font-size:12.5px; color:var(--text-muted)}
+
+/* ───────────────────────── 響應式 ───────────────────────── */
+@media (max-width:900px){
+  .wrap{flex-direction:column}
+  nav{position:static; width:100%; flex:none; height:auto;
+      border-right:none; border-bottom:1px solid var(--border); padding:20px}
+  nav a{display:inline-block; margin-right:4px; border-left:none}
+  nav a.active{border-left:none}
+  nav .grp{margin-top:12px}
+  main{padding:24px 20px 60px}
+  .toggle{top:auto; bottom:16px}
+}
+</style>
+</head>
+<body>
+
+<button class="toggle" id="themeBtn" type="button">◐ 主題</button>
+
+<div class="wrap">
+<nav>
+  <div class="brand">
+    <div class="mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="5" width="20" height="14" rx="2"/><path d="m2 7 10 6 10-6"/>
+      </svg>
+    </div>
+    <h1>AI 郵件智慧決策助理</h1>
+  </div>
+  <p class="sub">系統說明文件</p>
+
+  <div class="grp">概觀</div>
+  <a href="#intro">1. 這套系統是什麼</a>
+  <a href="#scope">2. 做什麼、不做什麼</a>
+
+  <div class="grp">架構</div>
+  <a href="#principle">3. 核心設計原則</a>
+  <a href="#layers">4. 分層與職責</a>
+  <a href="#flow">5. 資料流</a>
+  <a href="#tree">6. 目錄結構</a>
+
+  <div class="grp">資料</div>
+  <a href="#schema">7. Schema 對應</a>
+  <a href="#alert">8. 告警處理</a>
+
+  <div class="grp">介面</div>
+  <a href="#pages">9. 頁面與功能</a>
+
+  <div class="grp">操作</div>
+  <a href="#run">10. 安裝與啟動</a>
+  <a href="#port">11. 移機到公司電腦</a>
+  <a href="#env">12. 環境變數</a>
+
+  <div class="grp">其他</div>
+  <a href="#limits">13. 已知限制</a>
+  <a href="#pitfall">14. 開發注意事項</a>
+</nav>
+
+<main>
+
+<!-- ══════════════════════ 1 ══════════════════════ -->
+<section id="intro">
+  <h2>1. 這套系統是什麼</h2>
+  <p class="lead">
+    一個以 Reflex（Python 全端框架）建置的桌面版 Web Dashboard，
+    把 Lotus Notes 的郵件與 LLM 的分析結果，整理成「今天要處理什麼」的決策畫面。
+  </p>
+
+  <div class="grid">
+    <div class="stat"><div class="k">目標解析度</div><div class="v">1920×1080</div><div class="d">Desktop Web Dashboard</div></div>
+    <div class="stat" style="border-top-color:var(--purple)"><div class="k">頁面 / 路由</div><div class="v">7 / 15</div><div class="d">全部共用同一組 Layout</div></div>
+    <div class="stat" style="border-top-color:var(--success)"><div class="k">資料模式</div><div class="v">2</div><div class="d">mock（離線）/ real（公司）</div></div>
+    <div class="stat" style="border-top-color:var(--warning)"><div class="k">切換成本</div><div class="v">1</div><div class="d">個環境變數，UI 零修改</div></div>
+  </div>
+
+  <h3>與擷取分析系統的分工</h3>
+  <p>
+    郵件的擷取與 LLM 分析由另一套 pipeline（<code>personal_assistant_v2</code>）完成。
+    本系統只負責「呈現」，兩者的交界面就是 pipeline 輸出的
+    <code>daily_reports/</code> 資料夾——Dashboard 只讀它，不寫它。
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 860 210" role="img" aria-label="pipeline 與 Dashboard 的分工示意圖">
+      <defs>
+        <marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto">
+          <path d="M0,0 L0,6.4 L8,3.2 z" fill="var(--text-muted)"/>
+        </marker>
+      </defs>
+      <rect x="14" y="20" width="380" height="170" rx="10"
+            fill="var(--surface-alt)" stroke="var(--border-strong)" stroke-dasharray="5 4"/>
+      <text x="30" y="42" font-size="12" font-weight="700" fill="var(--text-2)">personal_assistant_v2（另一套系統）</text>
+      <g font-size="12.5" fill="var(--text)">
+        <rect x="34" y="56" width="150" height="30" rx="6" fill="var(--surface)" stroke="var(--border-strong)"/>
+        <text x="109" y="75" text-anchor="middle">Lotus Notes</text>
+        <rect x="34" y="96" width="150" height="30" rx="6" fill="var(--surface)" stroke="var(--border-strong)"/>
+        <text x="109" y="115" text-anchor="middle">Step A 擷取</text>
+        <rect x="214" y="56" width="160" height="30" rx="6" fill="var(--surface)" stroke="var(--border-strong)"/>
+        <text x="294" y="75" text-anchor="middle">Step C 多模態摘要</text>
+        <rect x="214" y="96" width="160" height="30" rx="6" fill="var(--surface)" stroke="var(--border-strong)"/>
+        <text x="294" y="115" text-anchor="middle">Step D 日報彙整</text>
+      </g>
+      <rect x="34" y="142" width="340" height="32" rx="6" fill="var(--primary-soft)" stroke="var(--primary-border)"/>
+      <text x="204" y="162" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--primary)">
+        輸出 daily_reports/
+      </text>
+
+      <line x1="380" y1="158" x2="452" y2="158" stroke="var(--text-muted)" stroke-width="1.6" marker-end="url(#ar)"/>
+      <text x="416" y="150" text-anchor="middle" font-size="10.5" fill="var(--text-muted)">只讀</text>
+
+      <rect x="462" y="20" width="384" height="170" rx="10"
+            fill="var(--surface)" stroke="var(--primary)" stroke-width="1.6"/>
+      <text x="478" y="42" font-size="12" font-weight="700" fill="var(--primary)">本系統（Dashboard）</text>
+      <g font-size="12.5" fill="var(--text)">
+        <rect x="482" y="56" width="160" height="30" rx="6" fill="var(--surface-alt)" stroke="var(--border-strong)"/>
+        <text x="562" y="75" text-anchor="middle">Repository / Adapter</text>
+        <rect x="482" y="96" width="160" height="30" rx="6" fill="var(--surface-alt)" stroke="var(--border-strong)"/>
+        <text x="562" y="115" text-anchor="middle">Service / State</text>
+        <rect x="662" y="76" width="164" height="30" rx="6" fill="var(--surface-alt)" stroke="var(--border-strong)"/>
+        <text x="744" y="95" text-anchor="middle">Web Dashboard</text>
+      </g>
+      <rect x="482" y="142" width="344" height="32" rx="6" fill="var(--surface-alt)" stroke="var(--border)"/>
+      <text x="654" y="162" text-anchor="middle" font-size="12" fill="var(--text-muted)">
+        不連 Notes、不呼叫 LLM、不寄信
+      </text>
+    </svg>
+    <figcaption>兩套系統以資料夾為介面，可獨立開發與部署</figcaption>
+  </figure>
+</section>
+
+<!-- ══════════════════════ 2 ══════════════════════ -->
+<section id="scope">
+  <h2>2. 做什麼、不做什麼</h2>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th style="width:50%">做</th><th>不做</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>整理今日重要郵件、待辦、Deadline、設備事件</td>
+        <td>取代 Lotus Notes</td>
+      </tr>
+      <tr>
+        <td>顯示 AI 摘要、行動項目、建議處置、回覆草稿</td>
+        <td>自行呼叫 LLM（分析在 pipeline 端完成）</td>
+      </tr>
+      <tr>
+        <td>依原始順序呈現郵件的文字、圖片與表格</td>
+        <td>連線 Lotus Notes 或使用 COM</td>
+      </tr>
+      <tr>
+        <td>以自然語言查詢當日郵件（Ask AI）</td>
+        <td>實際寄信或自動回覆</td>
+      </tr>
+      <tr>
+        <td>把重複的系統告警聚合成事件</td>
+        <td>寫入任何公司系統（唯讀）</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note ok">
+    <span class="t">可離線展示</span>
+    Mock 模式內建 24 封範例郵件與 5 張示意圖，不需要公司環境、Lotus Notes 或任何 API，
+    <code>reflex run</code> 就能完整操作所有頁面。
+  </div>
+</section>
+
+<!-- ══════════════════════ 3 ══════════════════════ -->
+<section id="principle">
+  <h2>3. 核心設計原則</h2>
+  <p class="lead">UI 與資料來源完全解耦。這是整個專案所有結構決策的來源。</p>
+
+  <p>
+    系統從一開始就預期要在兩種環境執行：個人電腦（假資料）與公司電腦（真實資料）。
+    因此格式差異一律由最底下兩層吸收，<strong>上層完全不知道資料從哪裡來</strong>。
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 840 130" role="img" aria-label="分層資料流示意圖">
+      <defs>
+        <marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto">
+          <path d="M0,0 L0,6.4 L8,3.2 z" fill="var(--text-muted)"/>
+        </marker>
+      </defs>
+      <g font-size="12.5" text-anchor="middle">
+        <rect x="10"  y="34" width="118" height="36" rx="7" fill="var(--surface-alt)" stroke="var(--border-strong)"/>
+        <text x="69"  y="57" fill="var(--text)">Component</text>
+        <rect x="150" y="34" width="106" height="36" rx="7" fill="var(--surface-alt)" stroke="var(--border-strong)"/>
+        <text x="203" y="57" fill="var(--text)">State</text>
+        <rect x="278" y="34" width="112" height="36" rx="7" fill="var(--surface-alt)" stroke="var(--border-strong)"/>
+        <text x="334" y="57" fill="var(--text)">Service</text>
+        <rect x="412" y="34" width="124" height="36" rx="7" fill="var(--primary-soft)" stroke="var(--primary)"/>
+        <text x="474" y="57" fill="var(--primary)" font-weight="700">Repository</text>
+        <rect x="558" y="34" width="112" height="36" rx="7" fill="var(--primary-soft)" stroke="var(--primary)"/>
+        <text x="614" y="57" fill="var(--primary)" font-weight="700">Adapter</text>
+        <rect x="692" y="34" width="136" height="36" rx="7" fill="var(--surface-alt)" stroke="var(--border-strong)"/>
+        <text x="760" y="57" fill="var(--text-2)">JSON / API / DB</text>
+      </g>
+      <g stroke="var(--text-muted)" stroke-width="1.5" marker-end="url(#ar2)">
+        <line x1="130" y1="52" x2="146" y2="52"/>
+        <line x1="258" y1="52" x2="274" y2="52"/>
+        <line x1="392" y1="52" x2="408" y2="52"/>
+        <line x1="538" y1="52" x2="554" y2="52"/>
+        <line x1="672" y1="52" x2="688" y2="52"/>
+      </g>
+      <path d="M412 82 L412 100 L670 100 L670 82" fill="none" stroke="var(--primary)"
+            stroke-width="1.4" stroke-dasharray="4 3"/>
+      <text x="541" y="118" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--primary)">
+        只有這兩層知道資料從哪裡來
+      </text>
+    </svg>
+    <figcaption>資料單向往上流動，格式差異在最底下兩層被吸收</figcaption>
+  </figure>
+
+  <h3>切換資料來源</h3>
+  <pre><code># 假資料，可完全離線展示
+$env:MAIL_DASHBOARD_DATA_MODE = "mock"
+
+# 公司 pipeline 的真實輸出
+$env:MAIL_DASHBOARD_DATA_MODE = "real"</code></pre>
+
+  <div class="note">
+    <span class="t">驗收標準</span>
+    切換模式時，<code>pages/</code>、<code>components/</code>、<code>states/</code>、
+    <code>services/</code>、<code>models/</code> 都不需要修改。
+    若發現非改不可，代表有東西寫死在不該寫死的地方。
+  </div>
+</section>
+
+<!-- ══════════════════════ 4 ══════════════════════ -->
+<section id="layers">
+  <h2>4. 分層與職責</h2>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th style="width:16%">層</th><th style="width:42%">可以做</th><th>不可以做</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>components/</code></td>
+        <td>顯示傳進來的 Model</td>
+        <td>讀檔、知道檔案路徑、知道 Notes 或 LLM 存在</td>
+      </tr>
+      <tr>
+        <td><code>pages/</code></td>
+        <td>組合 component、定義版面</td>
+        <td>同上</td>
+      </tr>
+      <tr>
+        <td><code>states/</code></td>
+        <td>存畫面狀態、呼叫 Service</td>
+        <td>業務判斷、<code>import repositories</code></td>
+      </tr>
+      <tr>
+        <td><code>services/</code></td>
+        <td>分類、篩選、搜尋、統計</td>
+        <td>知道資料是 JSON 還是資料庫</td>
+      </tr>
+      <tr>
+        <td><code>repositories/</code></td>
+        <td>決定資料從哪讀、如何載入</td>
+        <td>決定資料怎麼顯示</td>
+      </tr>
+      <tr>
+        <td><code>adapters/</code></td>
+        <td>吸收外部格式差異</td>
+        <td>業務判斷</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note warn">
+    <span class="t">常見誤用</span>
+    UI 不應該自己寫 <code>mail.ai.importance &gt;= 4</code>，而是呼叫
+    <code>mail_service.get_important_mails()</code>。
+    「幾星算重要」的定義改變時，只需要修改 <code>services/mail_service.py</code> 一個檔案。
+  </div>
+
+  <h3>顯示用的值一律預先算好</h3>
+  <p>
+    Model 內所有 UI 要顯示的字串（時間標籤、星號、期限文字、檔案大小…）
+    都是<strong>實體欄位</strong>，由 Adapter 在建立物件時一次算完。
+    不使用 <code>@property</code>，因為 Reflex 的 Var 無法存取 property，
+    而且元件本來就不該做資料加工。
+  </p>
+</section>
+
+<!-- ══════════════════════ 5 ══════════════════════ -->
+<section id="flow">
+  <h2>5. 資料流</h2>
+
+  <h3>Mock 模式</h3>
+  <pre><code>app/mock_data/*.json
+    → MockMailAdapter        欄位改名、單位換算、衍生值計算
+    → MockMailRepository     載入時把日期整體平移到執行當天
+    → Service → State → UI</code></pre>
+  <p>
+    Mock JSON 的日期錨定在 <code>MOCK_ANCHOR_DATE</code>，
+    載入時會平移到執行當天，因此任何一天打開 Demo，「今日總覽」都有資料。
+    這是 Repository 的內部行為，上層完全不知情，換成 real 模式時不會有殘留邏輯。
+  </p>
+
+  <h3>Real 模式</h3>
+  <pre><code>daily_reports/
+  &lt;YYYY-MM-DD&gt;[-批次後綴]/
+      mails/mail_NNNN/mail.json          ← Step A 產出
+      mails/mail_NNNN/body_image_*.gif   ← 郵件內嵌圖片
+      summaries/mail_NNNN_summary.json   ← Step C 產出
+      daily_digest.md                    ← Step D 產出
+          ↓
+  CompanyMailAdapter    吸收格式差異
+          ↓
+  RealMailRepository    依日期分組、聚合告警、合成今日重點
+          ↓
+  Service → State → UI</code></pre>
+
+  <div class="note">
+    <span class="t">同一天的多個批次會自動合併</span>
+    <code>2026-08-07</code> 與 <code>2026-08-07-MAIL41_TO_MAIL64</code>
+    會依資料夾名稱開頭的日期歸為同一天。
+  </div>
+
+  <h3>檢視日期切換</h3>
+  <p>
+    Header 的日期為下拉選單，可選的日期就是輸出目錄下有資料的那幾天。
+    <strong>預設看今天</strong>；今天沒有資料時退回最近一天，並在旁邊標示原因，
+    避免看到空白首頁卻不知道為什麼。
+  </p>
+  <p>
+    切換日期時，Repository 的 <code>reference_date</code> 跟著改變，
+    所有「今日 / 昨日 / 本週」的統計都會即時重算——
+    Service 的「今天」是動態讀取而非建構時算死的。
+  </p>
+
+  <h3>郵件圖片</h3>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>模式</th><th>圖片位置</th><th>提供方式</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill gray">mock</span></td><td><code>assets/mock/images/</code></td><td>Reflex 靜態檔案</td></tr>
+      <tr><td><span class="pill blue">real</span></td><td><code>daily_reports/</code> 內</td><td>後端掛載的 <code>/mail-assets</code> 唯讀路由</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>
+    真實郵件的圖片不能整包複製到 <code>assets/</code>，
+    因此在 <code>app/main.py</code> 掛一個靜態路由指向輸出目錄。
+    元件只拿到一個可用的 URL，不需要知道兩者的差別。
+  </p>
+</section>
+
+<!-- ══════════════════════ 6 ══════════════════════ -->
+<section id="tree">
+  <h2>6. 目錄結構</h2>
+<pre><code>AI 郵件智慧決策助理/
+├── rxconfig.py              Reflex 框架設定（port、主題、plugin）
+├── requirements.txt
+├── ARCHITECTURE.md          架構文件（Markdown 版）
+├── docs/index.html          本文件
+│
+├── app/
+│   ├── config.py            ★ 唯一需要因環境調整的檔案
+│   ├── theme.py             色彩 / 尺寸 token，元件不自己寫色碼
+│   ├── navigation.py        Sidebar 導覽定義
+│   ├── main.py              進入點、路由、圖片靜態掛載
+│   │
+│   ├── models/              內部資料模型（系統的共同語言）
+│   │   ├── mail.py              Mail / Sender / ContentBlock
+│   │   ├── ai_analysis.py       AIAnalysis / TodoItem / KeyFact
+│   │   ├── dashboard.py         KpiSummary / DailyBrief / SystemAlert
+│   │   ├── attachment.py / ask_ai.py
+│   │   └── enums.py             MailCategory / Severity / NavKey / MailFilter
+│   │
+│   ├── repositories/        資料存取
+│   │   ├── base_mail_repository.py    介面（合約）
+│   │   ├── mock_mail_repository.py    Mock 實作
+│   │   ├── real_mail_repository.py    公司 pipeline 實作
+│   │   └── adapters/
+│   │       ├── mock_adapter.py        Mock JSON → Model
+│   │       ├── company_adapter.py     公司 JSON → Model
+│   │       └── alert_parser.py        告警主旨解析
+│   │
+│   ├── services/            業務邏輯
+│   │   ├── mail_service.py            分類 / 搜尋 / 篩選 / 統計
+│   │   ├── dashboard_service.py       KPI 計算
+│   │   └── ai_service.py              Ask AI（引擎可抽換）
+│   │
+│   ├── states/app_state.py  全域畫面狀態
+│   ├── components/          14 個 UI 元件
+│   ├── pages/               7 個頁面
+│   └── mock_data/           Mock 用的假資料
+│
+└── assets/mock/images/      Mock 郵件的示意圖</code></pre>
+</section>
+
+<!-- ══════════════════════ 7 ══════════════════════ -->
+<section id="schema">
+  <h2>7. Schema 對應</h2>
+  <p class="lead">
+    公司 pipeline 的輸出格式若改變，<strong>只修改 <code>adapters/company_adapter.py</code></strong>，
+    不要動其他任何一層。
+  </p>
+
+  <h3>mail.json → Mail</h3>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th style="width:24%">內部 Model</th><th style="width:30%">公司欄位</th><th>處理方式</th></tr></thead>
+    <tbody>
+      <tr><td><code>mail_id</code></td><td><code>mail_id</code></td><td>直接對應</td></tr>
+      <tr><td><code>subject</code></td><td><code>subject</code></td><td>移除結尾的資料分級標記</td></tr>
+      <tr><td><code>sender</code></td><td><code>from</code>（純字串，4 種格式）</td><td><code>_parse_sender()</code> 解析</td></tr>
+      <tr><td><code>sent_at</code></td><td><code>date</code>（只有日期）</td><td>補 00:00；<code>time_label</code> 留空</td></tr>
+      <tr><td><code>content_blocks</code></td><td><code>blocks</code>（image 用 <code>path</code>）</td><td>欄位改名 + 組圖片 URL</td></tr>
+      <tr><td><code>to</code> / <code>cc</code></td><td><code>to</code> / <code>cc</code></td><td>直接對應（值可能是群組名）</td></tr>
+      <tr><td><code>is_read</code> / <code>attachments</code></td><td><span class="pill gray">無</span></td><td>一律當未讀 / 空清單</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4><code>from</code> 欄位的四種格式</h4>
+  <p>寄件者是純字串而非結構化物件，且格式不統一，解析器四種都要處理（以下為示意值）：</p>
+<pre><code>"Alert System" &lt;alert-system@example.com&gt;
+Alert System &lt;alert-system@example.com&gt;
+CN=Some User/OU=DEPT/O=ORG           ← 沒有 email
+Some User/DEPT/ORG                   ← 沒有 email</code></pre>
+
+  <h3>summary.json → AIAnalysis</h3>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th style="width:24%">內部 Model</th><th style="width:30%">公司欄位</th><th>處理方式</th></tr></thead>
+    <tbody>
+      <tr><td><code>category</code></td><td><code>category</code>（7 種值域）</td><td>對照表轉換</td></tr>
+      <tr><td><code>importance</code>（1–5）</td><td><code>priority</code>（high/medium/low）</td><td>三級轉五級，見下</td></tr>
+      <tr><td><code>todos</code></td><td><code>action_items</code></td><td>改名</td></tr>
+      <tr><td><code>key_points</code></td><td><code>key_points</code></td><td>純字串陣列，條列顯示</td></tr>
+      <tr><td><code>key_facts</code></td><td><span class="pill gray">無</span></td><td>公司端沒有 label/value 配對</td></tr>
+      <tr><td><code>action_required</code></td><td><code>reply_needed</code> + <code>category</code></td><td>綜合判定</td></tr>
+      <tr><td><code>addressed_to</code></td><td><code>addressed_to_me</code></td><td>direct / cc / broadcast</td></tr>
+      <tr><td><code>deadline</code></td><td><code>deadline</code></td><td>Step C 保證為 <code>YYYY-MM-DD</code> 或空字串</td></tr>
+      <tr><td><code>recommendations</code></td><td><code>recommendations</code></td><td>直接對應</td></tr>
+      <tr><td><code>reply_draft</code></td><td><code>reply_draft</code></td><td>直接對應</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>三級 priority 轉五級 importance</h4>
+<pre><code>基礎分   high = 5 / medium = 3 / low = 1
+  +1     category 是 urgent 或 action_required
+  +1     addressed_to_me == "direct"
+上限 5</code></pre>
+  <p>
+    單看 <code>priority</code> 會壓縮太多資訊：實際資料多半只有 low 與 medium，
+    全部落在 1 或 3 星，「重要郵件」永遠是 0 封。
+    因此納入另外兩個公司端<strong>已經判定好</strong>的訊號。
+    這是刻度換算（屬於格式差異）所以放在 Adapter；
+    「幾星算重要」的門檻仍由 <code>MailService</code> 決定。
+  </p>
+
+  <div class="note warn">
+    <span class="t">舊批次相容</span>
+    <code>deadline</code>、<code>recommendations</code>、<code>reply_draft</code>
+    是後期才加入 Step C 的欄位。舊批次的 summary 沒有這三項時一律容錯為空值，
+    UI 會自動隱藏對應區塊，不需要回頭重跑舊資料。
+  </div>
+</section>
+
+<!-- ══════════════════════ 8 ══════════════════════ -->
+<section id="alert">
+  <h2>8. 告警處理</h2>
+  <p>
+    公司資料<strong>沒有獨立的告警檔</strong>，系統事件是從
+    <code>category == "machine_alert"</code> 的郵件推導出來的。
+  </p>
+
+  <h3>本文是空的，資訊在主旨</h3>
+  <p>
+    這類告警信的 <code>blocks</code> 多半是空的（擷取階段抓不到本文），
+    但主旨是固定格式，所有資訊本來就在主旨裡，
+    因此不需要回頭修改擷取邏輯，由 <code>alert_parser.py</code> 解析即可。
+  </p>
+<pre><code>【汙染因子超標通知】X1 關鍵機台 X1_TOOL_03 - PSN X1_TOOL_03#P1 狀態 OOS
+                  ^^  ^^^^^^^^  ^^^^^^^^^^        ^^^^^^^^^^^^^  ^^^
+                  區域   關鍵性      機台              PSN 點位     狀態</code></pre>
+  <p style="font-size:13px;color:var(--text-muted)">（機台代號為示意值）</p>
+
+  <h3>聚合</h3>
+  <p>
+    同類告警依 <code>alert_key</code> 聚合，避免事件頁被同一種告警灌滿；
+    卡片上以 <code>×N</code> 標示出現次數。
+    關鍵機台的超標告警自動升為<span class="pill" style="color:var(--danger);background:var(--danger-soft);border-color:var(--danger)">嚴重</span>。
+  </p>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>告警類型</th><th>嚴重度</th><th>來源欄位</th></tr></thead>
+    <tbody>
+      <tr><td>汙染因子超標（關鍵機台）</td><td><span class="pill" style="color:var(--danger);background:var(--danger-soft);border-color:var(--danger)">嚴重</span></td><td>主旨解析</td></tr>
+      <tr><td>汙染因子超標（非關鍵）</td><td><span class="pill warn">警告</span></td><td>主旨解析</td></tr>
+      <tr><td>裝置斷線 / 離線</td><td><span class="pill warn">警告</span></td><td>主旨解析</td></tr>
+      <tr><td>自動派報 / 其他</td><td><span class="pill gray">資訊</span></td><td><code>alert_type</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note warn">
+    <span class="t">上游規則有誤判</span>
+    pipeline 以寄件者與主旨關鍵字快速分流告警，
+    部分公告類郵件（如 HR 通知）會誤判為 <code>machine_alert</code>。
+    這類郵件無法解析出機台，事件卡片會顯示「—」。
+    要根治需調整 pipeline 端的分流規則，非 Dashboard 可解。
+  </div>
+</section>
+
+<!-- ══════════════════════ 9 ══════════════════════ -->
+<section id="pages">
+  <h2>9. 頁面與功能</h2>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th style="width:18%">頁面</th><th style="width:22%">路由</th><th>內容</th></tr></thead>
+    <tbody>
+      <tr><td>今日總覽</td><td><code>/</code></td><td>5 張 KPI 卡、AI 今日重點、需要您處理、系統事件</td></tr>
+      <tr><td>智慧收件匣</td><td><code>/mail/*</code></td><td>三欄工作區。8 種分類各一條路由</td></tr>
+      <tr><td>待辦事項</td><td><code>/todo</code></td><td>AI 從郵件拆解的行動項目，可勾選</td></tr>
+      <tr><td>系統事件</td><td><code>/alerts</code></td><td>聚合後的設備告警</td></tr>
+      <tr><td>報表</td><td><code>/reports</code></td><td>共用三欄工作區，篩選報表類</td></tr>
+      <tr><td>Ask AI</td><td><code>/ask-ai</code></td><td>自然語言查詢與問答紀錄</td></tr>
+      <tr><td>設定</td><td><code>/settings</code></td><td>資料來源、身分、路徑診斷</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>三欄工作區</h3>
+  <figure>
+    <svg viewBox="0 0 840 190" role="img" aria-label="Mail Workspace 三欄版面比例">
+      <rect x="10" y="14" width="196" height="162" rx="8" fill="var(--surface-alt)" stroke="var(--border-strong)"/>
+      <text x="108" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text)">Mail List</text>
+      <text x="108" y="62" text-anchor="middle" font-size="11.5" fill="var(--text-muted)">25%</text>
+      <text x="108" y="88" text-anchor="middle" font-size="11" fill="var(--text-2)">搜尋 / Filter</text>
+      <text x="108" y="106" text-anchor="middle" font-size="11" fill="var(--text-2)">寄件者、主旨、預覽</text>
+      <text x="108" y="124" text-anchor="middle" font-size="11" fill="var(--text-2)">未讀、重要、附件標記</text>
+
+      <rect x="216" y="14" width="358" height="162" rx="8" fill="var(--surface)" stroke="var(--border-strong)"/>
+      <text x="395" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="var(--text)">原始郵件</text>
+      <text x="395" y="62" text-anchor="middle" font-size="11.5" fill="var(--text-muted)">45%</text>
+      <text x="395" y="88" text-anchor="middle" font-size="11" fill="var(--text-2)">主旨、From / To / Cc、日期</text>
+      <text x="395" y="106" text-anchor="middle" font-size="11" fill="var(--text-2)">文字 → 圖片 → 表格，維持原始順序</text>
+      <text x="395" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="var(--danger)">不含任何 AI 產生的內容</text>
+
+      <rect x="584" y="14" width="246" height="162" rx="8" fill="var(--purple-soft)" stroke="var(--purple-border)"/>
+      <text x="707" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="var(--purple)">AI Analysis</text>
+      <text x="707" y="62" text-anchor="middle" font-size="11.5" fill="var(--text-muted)">30%</text>
+      <text x="707" y="88" text-anchor="middle" font-size="11" fill="var(--text-2)">摘要 / 待辦 / 建議 / 回覆</text>
+      <text x="707" y="106" text-anchor="middle" font-size="11" fill="var(--text-2)">重要度、分類、Deadline</text>
+      <text x="707" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="var(--purple)">全部標示為 AI 生成</text>
+    </svg>
+    <figcaption>原始郵件與 AI 內容以版面與配色明確區隔，避免混淆</figcaption>
+  </figure>
+
+  <div class="note danger">
+    <span class="t">原始郵件與 AI 內容不可混淆</span>
+    中欄的 Mail Viewer <strong>完全不讀取</strong> <code>mail.ai</code>，
+    右欄則整體採用紫色系並在每個區塊標示「AI 生成」。
+    這是刻意的設計約束，修改元件時不可打破。
+  </div>
+
+  <h3>Ask AI</h3>
+  <p>
+    底部固定的輸入列在所有頁面都在。第一階段以本機規則比對 Mock / 真實資料回答，
+    <strong>不呼叫任何外部 API</strong>，支援「今天有哪些重要郵件」「有哪些需要我處理」
+    「有哪些 Deadline」「有哪些設備異常」等問法。
+  </p>
+  <p>
+    引擎抽象為 <code>BaseAskAIEngine</code>，把 <code>AI_MODE</code> 改為
+    <code>llm</code> 即可換成呼叫公司端 LLM，元件不需要修改。
+  </p>
+</section>
+
+<!-- ══════════════════════ 10 ══════════════════════ -->
+<section id="run">
+  <h2>10. 安裝與啟動</h2>
+<pre><code># 1. 建立虛擬環境
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# 2. 安裝套件
+pip install -r requirements.txt
+
+# 3. 啟動（預設 mock 模式，不需要任何公司環境）
+reflex run</code></pre>
+
+  <p>
+    前端 <code>http://localhost:3000</code>、後端 <code>8000</code>。
+    port 被佔用時：
+  </p>
+<pre><code>reflex run --frontend-port 3001 --backend-port 8001</code></pre>
+
+  <h3>快速檢查程式是否可編譯</h3>
+  <p>不需要啟動伺服器，就能逐頁抓出元件層級的錯誤：</p>
+<pre><code>python -c "import app.main as m; [m.app._compile_page(r, save_page=False) for r in m.app._unevaluated_pages]"</code></pre>
+</section>
+
+<!-- ══════════════════════ 11 ══════════════════════ -->
+<section id="port">
+  <h2>11. 移機到公司電腦</h2>
+  <p class="lead">五個步驟，<strong>不需要修改任何 <code>.py</code> 檔</strong>。</p>
+
+  <ol>
+    <li>
+      <strong>重建虛擬環境</strong>——<code>.venv/</code> 不要複製，裡面有絕對路徑。
+      <code>python -m venv .venv</code> 後重新 <code>pip install -r requirements.txt</code>。
+    </li>
+    <li>
+      <strong>指定資料模式</strong>：<code>$env:MAIL_DASHBOARD_DATA_MODE = "real"</code>
+    </li>
+    <li>
+      <strong>確認找得到 pipeline 輸出</strong>——
+      系統會自動從專案根目錄往下搜尋名為 <code>daily_reports</code> 的資料夾。
+      若在專案外（網路磁碟、其他磁碟機），設定
+      <code>MAIL_DASHBOARD_REAL_DATA_DIR</code>。
+    </li>
+    <li>
+      <strong>確認找得到身分設定檔</strong>——同樣自動搜尋
+      <code>alert_config.json</code>。找不到會退回預設的展示身分。
+    </li>
+    <li>
+      <strong>檢查 port</strong> 未被佔用。
+    </li>
+  </ol>
+
+  <h3>驗證是否接上</h3>
+  <p>啟動後開 <code>/settings</code>，該頁刻意把所有路徑攤開顯示，逐項確認：</p>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th style="width:32%">項目</th><th>應該顯示</th></tr></thead>
+    <tbody>
+      <tr><td>DATA_MODE</td><td><span class="pill ok">real</span>，不是 mock</td></tr>
+      <tr><td>狀態</td><td><code>OK — &lt;日期&gt; 共 N 封郵件</code>，不是「找不到目錄」</td></tr>
+      <tr><td>公司資料目錄</td><td>指向正確的 <code>daily_reports</code></td></tr>
+      <tr><td>使用者身分</td><td>你的名字，不是預設的展示身分</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note danger">
+    <span class="t">不要複製 pipeline 的輸出目錄</span>
+    真實郵件資料與 pipeline 設定檔含機敏內容，且公司電腦上 pipeline 本來就會產出。
+    這兩者已在 <code>.gitignore</code> 中排除，不會進入版控。
+  </div>
+</section>
+
+<!-- ══════════════════════ 12 ══════════════════════ -->
+<section id="env">
+  <h2>12. 環境變數</h2>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th style="width:38%">變數</th><th style="width:32%">用途</th><th>未設定時</th></tr></thead>
+    <tbody>
+      <tr><td><code>MAIL_DASHBOARD_DATA_MODE</code></td><td><code>mock</code> / <code>real</code></td><td><code>mock</code></td></tr>
+      <tr><td><code>MAIL_DASHBOARD_REAL_DATA_DIR</code></td><td>pipeline 輸出目錄</td><td>自動搜尋 <code>daily_reports</code></td></tr>
+      <tr><td><code>MAIL_DASHBOARD_COMPANY_CONFIG</code></td><td>身分設定檔</td><td>自動搜尋 <code>alert_config.json</code></td></tr>
+      <tr><td><code>MAIL_DASHBOARD_USER_NAME</code></td><td>覆蓋顯示的姓名</td><td rowspan="3">讀設定檔的 <code>user_identity</code></td></tr>
+      <tr><td><code>MAIL_DASHBOARD_USER_ROLE</code></td><td>覆蓋顯示的角色</td></tr>
+      <tr><td><code>MAIL_DASHBOARD_USER_EMAIL</code></td><td>覆蓋顯示的 Email</td></tr>
+      <tr><td><code>MAIL_DASHBOARD_KEY_PERSONS</code></td><td>主管名單，逗號分隔（會疊加）</td><td>讀設定檔的 <code>priority_sender_keywords</code></td></tr>
+      <tr><td><code>MAIL_DASHBOARD_AI_MODE</code></td><td><code>mock</code> / <code>llm</code></td><td><code>mock</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h4>永久設定（Windows）</h4>
+<pre><code>[Environment]::SetEnvironmentVariable("MAIL_DASHBOARD_DATA_MODE", "real", "User")</code></pre>
+  <p style="font-size:13.5px;color:var(--text-muted)">設定後需重新開啟終端機才會生效。</p>
+
+  <div class="note">
+    <span class="t">身分不重複維護</span>
+    使用者姓名與角色沿用 pipeline 設定檔的 <code>user_identity</code>，
+    Dashboard 不另外儲存一份，避免改了一邊忘了另一邊。
+    系統只讀取 <code>user_identity</code> 與 <code>priority_sender_keywords</code>
+    兩個欄位，設定檔內的憑證完全不碰。
+  </div>
+</section>
+
+<!-- ══════════════════════ 13 ══════════════════════ -->
+<section id="limits">
+  <h2>13. 已知限制</h2>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th style="width:28%">項目</th><th style="width:44%">說明</th><th>解法在哪一端</th></tr></thead>
+    <tbody>
+      <tr><td>郵件沒有時間</td><td>pipeline 只輸出日期，Mail List 不顯示時分</td><td>pipeline（Step A）</td></tr>
+      <tr><td>沒有已讀狀態</td><td>Notes 的已讀旗標未匯出，一律當未讀</td><td>pipeline（Step A）</td></tr>
+      <tr><td>沒有附件</td><td>只擷取內嵌圖片，不含附件檔</td><td>pipeline（Step A）</td></tr>
+      <tr><td>告警信本文是空的</td><td>靠主旨解析補齊；未涵蓋的格式顯示「—」</td><td>Dashboard（新增解析規則）</td></tr>
+      <tr><td>告警分流有誤判</td><td>公告類郵件可能被歸為系統告警</td><td>pipeline（Step C 規則）</td></tr>
+      <tr><td>不實作寄信</td><td>「建立 Draft」僅在畫面標記，不會寄出</td><td>設計上刻意不做</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ══════════════════════ 14 ══════════════════════ -->
+<section id="pitfall">
+  <h2>14. 開發注意事項</h2>
+  <p class="lead">兩個 Reflex 特有的陷阱，錯誤訊息完全看不出真因。</p>
+
+  <h3>① dataclass 欄位不可與 Var 方法同名</h3>
+  <p>
+    <code>items</code>、<code>to</code>、<code>keys</code>、<code>values</code>
+    都是 Reflex <code>ObjectVar</code> 上的真實方法。
+    欄位取這些名字時，<code>block.items</code> 會取到<strong>方法本身</strong>而不是欄位。
+  </p>
+  <pre><code>TypeError: Cannot pass a Var to a built-in function.</code></pre>
+  <p>
+    因此 <code>ContentBlock</code> 的清單欄位命名為 <code>list_items</code> 而非 <code>items</code>。
+  </p>
+
+  <h3>② <code>rx.icon(tag)</code> 的 tag 必須是編譯期常數</h3>
+  <p>
+    Reflex 要據此決定 import 哪個圖示，傳入 Var（含
+    <code>rx.match</code> / <code>rx.cond</code> 的結果）會噴出同一句錯誤。
+    正確做法是先把每種圖示各建成一個元件，再用 <code>rx.match</code> 挑元件：
+  </p>
+<pre><code>rx.match(
+    item.icon_key,
+    *[(key, rx.icon(tag, size=16)) for key, tag in ICONS.items()],
+    rx.icon("file", size=16),
+)</code></pre>
+
+  <div class="note ok">
+    <span class="t">補充</span>
+    Var <strong>可以</strong>用在 f-string（<code>f"{State.count} 封"</code> 正常運作），
+    所以看到這句錯誤時不必往 f-string 方向查。
+  </div>
+
+  <footer>
+    <p>
+      本文件描述系統架構與操作方式，不含任何真實郵件內容、憑證或個人資料。
+      文中的機台代號、寄件者與 Email 皆為示意值。
+    </p>
+    <p>Markdown 版本見專案根目錄的 <code>ARCHITECTURE.md</code>。</p>
+  </footer>
+</section>
+
+</main>
+</div>
+
+<script>
+// 主題切換：跟隨系統，可手動覆寫並記住選擇。
+(function () {
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem('doc-theme'); } catch (e) {}
+  if (saved) root.setAttribute('data-theme', saved);
+
+  document.getElementById('themeBtn').addEventListener('click', function () {
+    var isDark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') &&
+       window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = isDark ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('doc-theme', next); } catch (e) {}
+  });
+})();
+
+// 捲動時高亮目前章節
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav a'));
+  var map = {};
+  links.forEach(function (a) {
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) map[el.id] = a;
+  });
+
+  var obs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      links.forEach(function (a) { a.classList.remove('active'); });
+      if (map[e.target.id]) map[e.target.id].classList.add('active');
+    });
+  }, { rootMargin: '0px 0px -75% 0px', threshold: 0 });
+
+  Object.keys(map).forEach(function (id) {
+    obs.observe(document.getElementById(id));
+  });
+})();
+</script>
+
+</body>
+</html>
