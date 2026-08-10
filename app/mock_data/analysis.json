@@ -1,0 +1,415 @@
+{
+  "_comment": "Mock LLM 結構化分析結果。模擬 Multimodal LLM 對每封郵件輸出的 JSON。以 mail_id 為 key。公司環境的實際欄位名稱可能不同，一律由 CompanyMailAdapter 轉換。",
+  "_model": "mock-multimodal-llm-v1",
+  "analyses": {
+    "MAIL_001": {
+      "importance": 5,
+      "category": "Action Required",
+      "action_required": true,
+      "deadline": "2026-08-14",
+      "summary": "B1_SCOP_03 Particle OOB 已持續三日，OOB Rate 攀升至 18.7%，8/07 的 Chamber Cleaning 未見改善。王經理要求確認根因、評估是否停機 PM，並於 8/14 前提交正式改善報告，供下週一產能會議向副總說明。",
+      "todos": ["確認 Particle OOB 真正原因", "確認目前改善措施與實際效果", "評估是否需要停機做完整 PM", "確認 8/07 後投入 Lot 是否受影響", "8/14 前完成並回覆改善報告"],
+      "recommendations": ["調閱近三日 Particle Trend 與 Chamber Pressure 同期資料交叉比對", "比對 8/07 Cleaning / CIP 紀錄，確認作業是否確實執行", "檢查 O-Ring 與密封件磨損狀況，優先排除微漏可能", "查詢 8/07 後經過此機台的所有 Lot，評估品質風險", "先行準備停機 PM 的備料與時段，避免確認根因後才開始排程"],
+      "key_facts": [
+        { "label": "機台", "value": "B1_SCOP_03 / PM2", "emphasis": false },
+        { "label": "OOB Rate", "value": "18.7%（規格 UCL 50，實測 104）", "emphasis": true },
+        { "label": "持續時間", "value": "3 天（自 8/07 03:20）", "emphasis": true },
+        { "label": "已採取措施", "value": "8/07 Chamber Cleaning（無效）", "emphasis": false },
+        { "label": "要求回覆期限", "value": "2026/08/14", "emphasis": true }
+      ],
+      "reply_draft": "王經理您好：\n\n收到您的指示，B1_SCOP_03 Particle 異常我這邊已在追。目前掌握的狀況與後續規劃如下：\n\n一、現況\n8/07 03:20 首次觸發 OOB，8/07 14:00 執行 Chamber Cleaning 後 Particle 短暫下降，但約 6 小時後回升，8/08 OOB Rate 達 18.7%。EE 於 8/08 檢查發現 O-Ring 有輕微磨損。\n\n二、初步研判\n傾向為 O-Ring 磨損造成微漏，導致 Chamber 內微環境不穩定。同期 Chamber Pressure 有 ±3% 波動可佐證，但仍需進一步驗證。\n\n三、後續行動\n1. 安排停機更換 O-Ring 並執行完整 PM，預計 8/11 進行\n2. PM 後連續監控 48 小時確認收斂\n3. 清查 8/07 後經過此機台的 Lot（目前已知 A26K1183 有 3 片 NG，A26K1190/1191 已 Hold）\n4. 完整改善報告將於 8/14 前提供，含根因分析、對策、效果驗證與水平展開\n\n若 PM 後效果不如預期，我會立即向您回報並提出替代方案。\n\n張協理 敬上",
+      "confidence": 0.94
+    },
+    "MAIL_002": {
+      "importance": 5,
+      "category": "Alert",
+      "action_required": true,
+      "deadline": "",
+      "summary": "FDC 系統對 B1_SCOP_03 PM2 發出 CRITICAL 等級 Particle 告警，實測值 104 遠超 UCL 50，已持續 3 天。系統已自動將機台切換為 Engineering Mode，後續 Lot 將自動 Skip。",
+      "todos": ["確認機台已進入 Engineering Mode 且無 Lot 誤投", "通知 PE 調整派工路徑，避免產能缺口", "追蹤 EE 的根因分析進度"],
+      "recommendations": ["確認 Engineering Mode 期間的產能影響，必要時啟用備援機台", "檢視同型機台（B1_SCOP_01/02）是否有相同劣化趨勢", "調閱 FDC 完整 Trace Data 作為根因分析輸入"],
+      "key_facts": [
+        { "label": "Equipment", "value": "B1_SCOP_03 / PM2", "emphasis": false },
+        { "label": "Parameter", "value": "Particle Count @0.3um", "emphasis": false },
+        { "label": "Spec vs 實測", "value": "UCL 50 → 實測 104", "emphasis": true },
+        { "label": "Alarm Level", "value": "CRITICAL", "emphasis": true },
+        { "label": "機台狀態", "value": "已自動切換 Engineering Mode", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.97
+    },
+    "MAIL_003": {
+      "importance": 4,
+      "category": "Meeting",
+      "action_required": true,
+      "deadline": "2026-08-11",
+      "summary": "8/12 (三) 14:00 週產能檢討會議，由林副總主持。議程包含 B1_SCOP_03 Particle 異常改善進度，需製造技術部說明。簡報須於 8/11 下班前上傳共用資料夾。",
+      "todos": ["準備 B1_SCOP_03 Particle 改善進度簡報", "8/11 下班前上傳簡報至共用資料夾", "確認 8/12 14:00 行事曆已保留"],
+      "recommendations": ["簡報聚焦根因、對策、時程三段，副總通常會追問效果驗證方式", "先與 EE 對齊口徑，避免會議上說法不一致", "準備 Lot Hold 的影響數字，議程第 4 項投料計畫可能會被連帶追問"],
+      "key_facts": [
+        { "label": "會議時間", "value": "2026/08/12 (三) 14:00-15:30", "emphasis": true },
+        { "label": "地點", "value": "B1 三樓 第二會議室", "emphasis": false },
+        { "label": "主持人", "value": "林副總", "emphasis": false },
+        { "label": "你的議程", "value": "第 3 項 - Particle 異常改善進度", "emphasis": true },
+        { "label": "簡報截止", "value": "2026/08/11 下班前", "emphasis": true }
+      ],
+      "reply_draft": "李秘書您好：\n\n收到會議通知，8/12 (三) 14:00 我會出席。\n\nB1_SCOP_03 Particle 異常改善進度的簡報，我會於 8/11 下班前上傳共用資料夾。\n\n麻煩了，謝謝。\n\n張協理",
+      "confidence": 0.91
+    },
+    "MAIL_004": {
+      "importance": 4,
+      "category": "Project",
+      "action_required": true,
+      "deadline": "2026-08-20",
+      "summary": "Titan 專案 W32 進度落後基準線 9%，卡在設備驗收 (SAT 70%) 與製程參數調校 (35%)。主因是供應商工程師簽證問題，預計 8/13 到廠。若 8/20 前無法完成 SAT，量產轉移將順延至 9 月底，影響客戶 Q4 出貨承諾。需製造技術部評估是否可用現有機台先做部分參數驗證。",
+      "todos": ["評估現有機台可否先進行部分製程參數驗證", "回覆陳專案經理可行性與所需資源", "確認 8/20 SAT 完成的風險緩解方案"],
+      "recommendations": ["盤點現有同型機台的可用時段，確認插單對量產的影響", "與 PE 確認哪些參數可以脫離新機台先行驗證，哪些一定要等 SAT", "若確定無法壓縮，及早向林副總示警，不要等到 8/20 才報告", "要求供應商提供簽證進度的書面承諾，避免 8/13 再度延期"],
+      "key_facts": [
+        { "label": "整體進度", "value": "落後基準線 9%", "emphasis": true },
+        { "label": "SAT 進度", "value": "70%（計畫 8/05 完成）", "emphasis": true },
+        { "label": "製程調校", "value": "35%（計畫 8/15 完成）", "emphasis": true },
+        { "label": "根本原因", "value": "供應商工程師簽證，8/13 到廠", "emphasis": false },
+        { "label": "最壞影響", "value": "量產轉移順延至 9 月底，衝擊 Q4 出貨", "emphasis": true }
+      ],
+      "reply_draft": "陳 PM 您好：\n\n關於 Titan 專案時程壓縮，我這邊初步評估如下：\n\n一、可先行驗證的部分\n製程參數中屬於配方基礎特性的項目（溫度/壓力窗口、氣體流量比例），可利用現有同型機台先做初步驗證，預估可省下 5 至 7 個工作天。\n\n二、必須等新機台的部分\n機台專屬的硬體相關參數（Chamber 幾何差異、RF 匹配）無法代替驗證，仍須等 SAT 完成。\n\n三、資源需求\n若要插單驗證，需佔用現有機台約 3 個班次，會影響當週產出約 120 片，需請 PE 協助調整投料計畫。\n\n四、建議\n請專案處同步向供應商取得 8/13 到廠的書面確認。若再度延期，建議在 8/15 前就提報風險，不要等到 8/20。\n\n請確認是否依此方向進行，我這邊可以先安排機台時段。\n\n張協理",
+      "confidence": 0.89
+    },
+    "MAIL_005": {
+      "importance": 4,
+      "category": "Report",
+      "action_required": true,
+      "deadline": "2026-08-11",
+      "summary": "Lot A26K1183 品質異常分析完成。該批於 8/07 15:30 通過 B1_SCOP_03，Wafer #7/#12/#19 出現表面顆粒缺陷，型態與機台 Particle 異常高度相關。建議 3 片報廢、其餘 22 片放行，並在異常收斂前避免投入高價值 Lot。",
+      "todos": ["核准 3 片 NG Wafer 報廢", "確認其餘 22 片放行流程", "發布高價值 Lot 暫緩投入 B1_SCOP_03 的指示"],
+      "recommendations": ["把這份分析納入 8/14 改善報告，作為品質影響的量化佐證", "以相同條件回溯清查 8/07 後其他經過此機台的 Lot", "確認報廢 3 片的成本，月度營運檢討會需要這個數字", "Nexus 稽核會問異常處置紀錄，請確保這次的判定有完整簽核"],
+      "key_facts": [
+        { "label": "Lot ID", "value": "A26K1183", "emphasis": false },
+        { "label": "NG Wafer", "value": "#07 / #12 / #19（共 3 片）", "emphasis": true },
+        { "label": "最低良率", "value": "88.4%（#12）", "emphasis": true },
+        { "label": "關聯性", "value": "缺陷型態與 Particle 異常高度相關", "emphasis": true },
+        { "label": "建議處置", "value": "3 片報廢，22 片放行", "emphasis": false }
+      ],
+      "reply_draft": "黃工程師、各位：\n\n分析報告收到，結論我同意。\n\n處置決定：\n1. Wafer #07 / #12 / #19 三片報廢，請依報廢流程送簽\n2. 其餘 22 片放行至下一站\n3. 在 B1_SCOP_03 異常收斂前，高價值 Lot 一律不投此機台，請 PE 配合調整派工\n\n另外請協助一件事：以相同判定條件，回溯清查 8/07 之後所有經過 B1_SCOP_03 的 Lot，我需要完整的品質影響清單納入 8/14 的改善報告。\n\n麻煩在 8/11 前提供，謝謝。\n\n張協理",
+      "confidence": 0.92
+    },
+    "MAIL_006": {
+      "importance": 2,
+      "category": "Report",
+      "action_required": false,
+      "deadline": "",
+      "summary": "8/08 生產日報：投片 1,842 片（達成 96.9%）、產出 1,795 片（95.5%）、良率 97.8%、設備稼動率 88.4%。主要異常為 B1_SCOP_03 停機 4.2 小時（Particle 異常）與 B2_ETCH_01 換料停機 1.5 小時。",
+      "todos": [],
+      "recommendations": ["稼動率 88.4% 低於目標 92%，主因即 B1_SCOP_03，可直接引用為改善案的效益基礎", "Cycle Time 4.6 天已連續偏離目標，建議觀察是否與 Lot Hold 累積有關"],
+      "key_facts": [
+        { "label": "投片量", "value": "1,842 片（達成 96.9%）", "emphasis": false },
+        { "label": "產出量", "value": "1,795 片（達成 95.5%）", "emphasis": false },
+        { "label": "整體良率", "value": "97.8%（目標 98.5%）", "emphasis": false },
+        { "label": "設備稼動率", "value": "88.4%（目標 92.0%）", "emphasis": true },
+        { "label": "主要損失", "value": "B1_SCOP_03 停機 4.2 小時", "emphasis": true }
+      ],
+      "reply_draft": "",
+      "confidence": 0.88
+    },
+    "MAIL_007": {
+      "importance": 2,
+      "category": "Auto Notification",
+      "action_required": false,
+      "deadline": "",
+      "summary": "CIM 系統將於 8/15 22:00 至 8/16 02:00 進行例行維護，期間 CIM/MES/EAP/WIP 查詢皆無法使用，需改用紙本派工單事後補登。",
+      "todos": [],
+      "recommendations": ["提前確認該時段的班表與投料量，安排紙本作業人力", "提醒夜班主管備妥紙本派工單"],
+      "key_facts": [
+        { "label": "維護時間", "value": "8/15 22:00 ~ 8/16 02:00", "emphasis": false },
+        { "label": "影響系統", "value": "CIM / MES / EAP / WIP", "emphasis": false },
+        { "label": "備援方式", "value": "紙本派工單，事後補登", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.95
+    },
+    "MAIL_008": {
+      "importance": 2,
+      "category": "Info",
+      "action_required": false,
+      "deadline": "",
+      "summary": "廠務部將於 8/15 14:00-16:00 調整 CDA 主管路壓力（6.5 bar → 7.0 bar），期間可能出現短暫波動，有壓力敏感製程的單位須提前告知。",
+      "todos": [],
+      "recommendations": ["確認 B1 區是否有壓力敏感製程，特別是目前已不穩定的 B1_SCOP_03", "若 8/15 仍在 PM 驗證期，建議請廠務錯開時段"],
+      "key_facts": [
+        { "label": "調整時間", "value": "8/15 (六) 14:00-16:00", "emphasis": false },
+        { "label": "壓力變更", "value": "6.5 bar → 7.0 bar", "emphasis": false },
+        { "label": "聯絡窗口", "value": "廠務部 吳工程師 #3372", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.9
+    },
+    "MAIL_009": {
+      "importance": 5,
+      "category": "Action Required",
+      "action_required": true,
+      "deadline": "2026-08-18",
+      "summary": "林副總要求準備 8 月份月度營運檢討資料（會議 8/20 上午 9:00），涵蓋產能達成率、重大設備異常檢討、良率趨勢、下月規劃與 Titan 專案風險。資料須於 8/18 中午前寄給李秘書。副總特別指明 B1_SCOP_03 案要有完整根因分析與預防措施，不接受只給結論。",
+      "todos": ["彙整本月產能達成率與缺口分析", "準備 B1_SCOP_03 完整根因分析與預防措施", "整理良率趨勢與改善成果", "準備下月產能規劃與資源需求", "彙整 Titan 專案進度與風險", "8/18 中午前寄給李秘書"],
+      "recommendations": ["B1_SCOP_03 段落直接沿用 8/14 給王經理的改善報告，避免重複作業", "副總明講不要只給結論，請務必附上 5-Why 或魚骨圖等分析過程", "預防措施要寫到水平展開（同型機台如何避免重演），這通常是追問重點", "Titan 專案風險與 8/20 SAT 期限同一天，建議合併說明並提供決策選項"],
+      "key_facts": [
+        { "label": "會議時間", "value": "2026/08/20 (四) 09:00", "emphasis": true },
+        { "label": "資料截止", "value": "2026/08/18 中午前", "emphasis": true },
+        { "label": "指定重點", "value": "B1_SCOP_03 根因分析與預防措施", "emphasis": true },
+        { "label": "特別要求", "value": "須含完整分析過程，不可只給結論", "emphasis": true },
+        { "label": "收件窗口", "value": "李秘書", "emphasis": false }
+      ],
+      "reply_draft": "副總您好：\n\n收到指示，8 月份月度營運檢討資料我會於 8/18 中午前寄給李秘書。\n\n關於 B1_SCOP_03 Particle 案，我會準備完整的根因分析，內容包含：\n1. 事件時序（首次觸發、各次處置與效果）\n2. 5-Why 根因分析與驗證資料\n3. 品質影響清單（受影響 Lot、報廢數量、成本）\n4. 對策與效果驗證數據\n5. 水平展開方案（同型機台 B1_SCOP_01/02 的預防措施）\n\n另 Titan 專案的 SAT 期限同為 8/20，我會在同一份資料中一併說明風險與建議方案，供您決策。\n\n張協理 敬上",
+      "confidence": 0.95
+    },
+    "MAIL_010": {
+      "importance": 2,
+      "category": "Info",
+      "action_required": false,
+      "deadline": "2026-09-08",
+      "summary": "宏泰科技提供 B1 無塵室 HEPA 濾網更換報價，總計 NT$252,000（未稅），含 48 組濾網、安裝工資與廢棄物處理，交期 21 個工作天，報價有效期 30 天。",
+      "todos": [],
+      "recommendations": ["若 Particle 異常確認與無塵室環境相關，此案可提高優先度", "建議至少取得三家報價再送採購，符合內部核決流程", "21 個工作天交期偏長，若要趕在 Nexus 稽核前完成需盡快決策"],
+      "key_facts": [
+        { "label": "總金額", "value": "NT$ 252,000（未稅）", "emphasis": false },
+        { "label": "數量", "value": "HEPA 濾網 48 組", "emphasis": false },
+        { "label": "交期", "value": "訂單確認後 21 個工作天", "emphasis": false },
+        { "label": "報價有效期", "value": "30 天（至 2026/09/08）", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.86
+    },
+    "MAIL_011": {
+      "importance": 3,
+      "category": "Alert",
+      "action_required": false,
+      "deadline": "",
+      "summary": "B2_ETCH_01 於 8/09 12:03 發生 EAP 連線中斷，持續 18 分鐘後於 12:21 自動恢復。期間累積 3 筆派工延遲，系統已自動補送。等級為 WARNING。",
+      "todos": [],
+      "recommendations": ["確認 3 筆補送派工是否確實執行且無重複", "查詢近一個月同機台 EAP 斷線頻率，判斷是否為偶發", "若為網路層問題，請 IT 一併檢視 B2 區交換器狀態"],
+      "key_facts": [
+        { "label": "Equipment", "value": "B2_ETCH_01", "emphasis": false },
+        { "label": "Event", "value": "EAP Connection Lost", "emphasis": false },
+        { "label": "中斷時間", "value": "18 分鐘（12:03-12:21）", "emphasis": false },
+        { "label": "自動恢復", "value": "成功", "emphasis": false },
+        { "label": "影響", "value": "3 筆派工延遲，已自動補送", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.93
+    },
+    "MAIL_012": {
+      "importance": 1,
+      "category": "Info",
+      "action_required": false,
+      "deadline": "2026-08-19",
+      "summary": "人資處開放「製程異常分析方法與工具應用」教育訓練報名，課程日期 8/26，名額 30 名，報名截止 8/19。",
+      "todos": [],
+      "recommendations": ["課程內容與目前 Particle 異常處理高度相關，可指派部門工程師參加"],
+      "key_facts": [
+        { "label": "課程日期", "value": "2026/08/26 (三) 09:00-17:00", "emphasis": false },
+        { "label": "名額", "value": "30 名", "emphasis": false },
+        { "label": "報名截止", "value": "2026/08/19", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.87
+    },
+    "MAIL_013": {
+      "importance": 5,
+      "category": "Action Required",
+      "action_required": true,
+      "deadline": "2026-08-14",
+      "summary": "Nexus 客戶 8/18 到廠進行年度品質系統稽核，重點為設備管理與異常處理流程。劉品保經理明確指出 B1_SCOP_03 Particle 異常必定會被質詢，要求稽核前備妥完整改善報告與紀錄（發現時間、通報流程、處置措施、效果驗證）。準備會議 8/14 10:00。",
+      "todos": ["整理 B1_SCOP_03 完整異常處理紀錄（發現/通報/處置/驗證）", "確認設備 PM 執行紀錄的追溯性與完整性", "檢視異常處理 SOP 與實際執行是否有落差", "確認人員訓練紀錄完整", "8/14 10:00 出席稽核準備會議"],
+      "recommendations": ["8/14 同時是改善報告期限與準備會議，建議同一份資料兼顧兩用途", "稽核最常見的失分點是 SOP 與實際做法不一致，請先自查再送出", "OOC/OOB 事件的結案紀錄要確認每一筆都有簽核，缺簽比缺改善更容易被開缺失", "建議提前做一次內部模擬問答，特別針對 Particle 案的時序說明"],
+      "key_facts": [
+        { "label": "稽核日期", "value": "2026/08/18 (二)", "emphasis": true },
+        { "label": "客戶", "value": "Nexus", "emphasis": false },
+        { "label": "稽核重點", "value": "設備管理與異常處理流程", "emphasis": true },
+        { "label": "高風險項目", "value": "B1_SCOP_03 Particle 異常", "emphasis": true },
+        { "label": "準備會議", "value": "2026/08/14 (五) 10:00", "emphasis": true }
+      ],
+      "reply_draft": "劉經理您好：\n\n收到，8/14 10:00 的準備會議我會出席。\n\n關於 B1_SCOP_03 Particle 異常，我這邊會在 8/14 前備妥以下稽核用資料：\n1. 完整事件時序表（首次觸發 8/07 03:20 起的每一次處置與結果）\n2. FDC 告警紀錄與自動處置證明（Engineering Mode 切換）\n3. Chamber Cleaning、O-Ring 檢查等作業紀錄\n4. 品質影響清查結果（含 A26K1183 判定與 Lot Hold 處置）\n5. 改善對策與效果驗證數據\n6. 水平展開方案\n\n另建議在準備會議上安排一次模擬問答，針對這個案子做內部演練，避免現場說法不一致。\n\n張協理",
+      "confidence": 0.93
+    },
+    "MAIL_014": {
+      "importance": 3,
+      "category": "Alert",
+      "action_required": true,
+      "deadline": "",
+      "summary": "SPC 系統對 B1_LITHO_02 CD 值發出 WARNING 告警，違反 Western Electric Rule 2（連續 8 點同側），目前平均 46.2nm（目標 45.0nm，規格 43.5~46.5nm）。尚未超出規格但已呈現單側偏移，建議機台校正。",
+      "todos": ["安排 B1_LITHO_02 機台校正", "確認偏移期間產出 Lot 的 CD 量測結果"],
+      "recommendations": ["46.2nm 距規格上限 46.5nm 僅 0.3nm，建議優先處理避免變成 OOS", "連續 8 點同側屬系統性偏移，多為機台漂移而非隨機變異，校正應可解決", "同時確認光阻批號是否於偏移起始點更換過"],
+      "key_facts": [
+        { "label": "Equipment", "value": "B1_LITHO_02", "emphasis": false },
+        { "label": "目前平均", "value": "46.2 nm（目標 45.0 nm）", "emphasis": true },
+        { "label": "規格上限", "value": "46.5 nm（僅剩 0.3 nm 餘裕）", "emphasis": true },
+        { "label": "違反規則", "value": "WE Rule 2 - 連續 8 點同側", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.91
+    },
+    "MAIL_015": {
+      "importance": 3,
+      "category": "Action Required",
+      "action_required": true,
+      "deadline": "2026-08-16",
+      "summary": "年度績效面談作業開始，需於 8/16 前完成自我評核表填寫、部屬績效初評，並與李秘書確認 8/24-8/28 的面談時段。系統 8/16 23:59 關閉，逾期無法補登。",
+      "todos": ["填寫自我評核表", "完成直屬部屬績效初評", "與李秘書確認面談時段"],
+      "recommendations": ["8/16 為系統硬性截止，逾期無法補登，建議優先於 8/14 前完成", "部屬初評需要具體事例佐證，可先請各課長提供本年度重點事蹟"],
+      "key_facts": [
+        { "label": "完成期限", "value": "2026/08/16 23:59（系統關閉）", "emphasis": true },
+        { "label": "面談期間", "value": "2026/08/24 ~ 08/28", "emphasis": false },
+        { "label": "作業系統", "value": "員工入口網 > 績效管理", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.9
+    },
+    "MAIL_016": {
+      "importance": 1,
+      "category": "Auto Notification",
+      "action_required": true,
+      "deadline": "2026-08-15",
+      "summary": "網域帳號密碼將於 8/15 到期，需以 Ctrl+Alt+Del 變更。規則為至少 12 碼、含大小寫字母數字與特殊符號，且不得與前 5 次重複。",
+      "todos": ["8/15 前更新網域密碼"],
+      "recommendations": ["建議在 8/15 CIM 系統維護前完成，避免維護期間帳號問題無法即時處理"],
+      "key_facts": [
+        { "label": "到期日", "value": "2026/08/15", "emphasis": false },
+        { "label": "密碼規則", "value": "至少 12 碼，含大小寫+數字+符號", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.96
+    },
+    "MAIL_017": {
+      "importance": 5,
+      "category": "Action Required",
+      "action_required": true,
+      "deadline": "2026-08-08",
+      "summary": "陳課長回報 A26K1190 / A26K1191 兩批 Nexus 急單（各 25 片，原訂 8/12 出貨）因 B1_SCOP_03 Particle 異常被系統自動 Hold。請示是否可先抽檢放行，不要整批等待機台問題解決。客戶正在追進度，要求當日內回覆方向。",
+      "todos": ["決定是否核准抽檢放行", "確認抽檢計畫與判定標準", "回覆陳課長處理方向", "評估 8/12 出貨是否需要向客戶預警"],
+      "recommendations": ["A26K1183 同期已有 3 片 NG，抽檢比例建議提高至 AQL 加嚴等級", "放行決定務必留下書面簽核，Nexus 稽核會查異常放行的決策依據", "若抽檢有任何 NG，建議整批扣留，急單風險小於客訴風險", "先與業務確認 8/14 出貨（已由 APS 自動改期）客戶是否已知悉"],
+      "key_facts": [
+        { "label": "Lot", "value": "A26K1190 / A26K1191（各 25 片）", "emphasis": false },
+        { "label": "產品", "value": "TN-450A（Nexus 急單）", "emphasis": true },
+        { "label": "原出貨日", "value": "2026/08/12", "emphasis": true },
+        { "label": "Hold 原因", "value": "B1_SCOP_03 Particle 異常自動 Hold", "emphasis": false },
+        { "label": "要求回覆", "value": "當日內", "emphasis": true }
+      ],
+      "reply_draft": "陳課長：\n\n收到，處理方向如下：\n\n一、同意抽檢，但採加嚴標準\n兩批各抽 8 片（含首尾片與中間片），做完整表面顆粒檢測。抽檢比例高於常規，因為同期 A26K1183 已確認有 3 片 NG。\n\n二、判定原則\n1. 抽檢全數 OK → 整批放行，但需在 Lot History 註記異常期間通過並經加嚴抽檢\n2. 任一片 NG → 整批扣留，改為全檢\n\n三、簽核\n放行決定我會出具書面核准，請 QA 一併會簽。這兩批之後會進入 Nexus 稽核範圍，紀錄必須完整。\n\n四、出貨時程\nAPS 已自動將 SO-2026-0813 改為 8/14 出貨，請確認業務是否已向客戶說明，不要讓客戶從系統才發現。\n\n請今天內啟動抽檢，結果出來立即回報。\n\n張協理",
+      "confidence": 0.94
+    },
+    "MAIL_018": {
+      "importance": 2,
+      "category": "Info",
+      "action_required": false,
+      "deadline": "2026-08-09",
+      "summary": "8/05 製造技術部週會紀錄。重點決議：B1 區設備 PM 週期自 9 月起由 90 天縮短為 60 天、新進工程師輪調計畫 8 月底前提出、Titan 專案增派 2 名 PE 支援、下次週會改至 8/12 下午。補充更正請於 8/09 前回覆。",
+      "todos": [],
+      "recommendations": ["PM 週期縮短的決議可直接引用為 B1_SCOP_03 案的預防措施，稽核與副總簡報都用得到", "8/09 是紀錄更正期限，如無異議可不回覆"],
+      "key_facts": [
+        { "label": "PM 週期", "value": "90 天 → 60 天（9 月起）", "emphasis": true },
+        { "label": "Titan 支援", "value": "PE 增派 2 名（9 月起）", "emphasis": false },
+        { "label": "更正期限", "value": "2026/08/09", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.85
+    },
+    "MAIL_019": {
+      "importance": 3,
+      "category": "Project",
+      "action_required": false,
+      "deadline": "",
+      "summary": "B3_CVD_05 新機台驗收進度：MAT/公用接管/FAT 已完成，SAT 進度 70% 卡在原廠工程師簽證，已確認 8/13 到廠、預計 8/16 完成 SAT，製程認證 8/20 開始。",
+      "todos": [],
+      "recommendations": ["8/16 完成 SAT 與 Titan 專案 8/20 期限僅差 4 天，緩衝極小，建議要求供應商提供書面承諾", "可先與 PE 排定製程認證所需的 Wafer 與時段，避免 SAT 一完成又空等"],
+      "key_facts": [
+        { "label": "Equipment", "value": "B3_CVD_05", "emphasis": false },
+        { "label": "SAT 進度", "value": "70%（原計畫 8/05 完成）", "emphasis": true },
+        { "label": "卡關原因", "value": "原廠工程師簽證，8/13 到廠", "emphasis": false },
+        { "label": "預計完成", "value": "2026/08/16", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.88
+    },
+    "MAIL_020": {
+      "importance": 2,
+      "category": "Report",
+      "action_required": false,
+      "deadline": "2026-08-20",
+      "summary": "7 月份環安衛月度稽核結果。B3 無塵室 5 項缺失、評分 88.1 為最低，主因個人防護具配戴不確實與物料堆放違規，該區主管須於 8/20 前提出改善回覆。化學品倉庫滿分 100。",
+      "todos": [],
+      "recommendations": ["B1 區 2 項缺失評分 95.2，屬可接受範圍，但仍建議確認缺失內容是否與無塵室環境管理相關", "若缺失涉及無塵室潔淨度，需一併納入 Particle 異常的環境面檢討"],
+      "key_facts": [
+        { "label": "B1 無塵室", "value": "2 項缺失，評分 95.2", "emphasis": false },
+        { "label": "B3 無塵室", "value": "5 項缺失，評分 88.1（最低）", "emphasis": true },
+        { "label": "改善期限", "value": "2026/08/20（B3 區）", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.87
+    },
+    "MAIL_021": {
+      "importance": 4,
+      "category": "Important",
+      "action_required": false,
+      "deadline": "",
+      "summary": "吳設備工程師提供 B1_SCOP_03 完整紀錄。關鍵發現：8/07 03:20 首次 OOB（剛完成 Wafer 更換）、8/07 14:00 Cleaning 後 6 小時回升、8/08 檢查發現 O-Ring 輕微磨損、同期 Chamber Pressure 有 ±3% 波動。研判 O-Ring 磨損造成微漏為可能根因，建議停機更換並做完整 PM。",
+      "todos": [],
+      "recommendations": ["這是目前最接近根因的證據鏈，建議直接作為 8/14 改善報告的核心論述", "Chamber Pressure ±3% 波動請調出原始 Trace 佐證，稽核時會需要客觀數據", "O-Ring 更換後務必連續監控 48 小時，效果驗證是報告不可缺的一段", "確認同型機台 B1_SCOP_01/02 的 O-Ring 使用時數，作為水平展開依據"],
+      "key_facts": [
+        { "label": "首次 OOB", "value": "8/07 03:20（剛完成 Wafer 更換）", "emphasis": false },
+        { "label": "Cleaning 效果", "value": "短暫下降，6 小時後回升", "emphasis": true },
+        { "label": "關鍵發現", "value": "O-Ring 輕微磨損", "emphasis": true },
+        { "label": "佐證", "value": "Chamber Pressure ±3% 波動", "emphasis": true },
+        { "label": "EE 建議", "value": "停機更換 O-Ring + 完整 PM", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.92
+    },
+    "MAIL_022": {
+      "importance": 2,
+      "category": "Auto Notification",
+      "action_required": false,
+      "deadline": "",
+      "summary": "APS 系統通知 W33 出貨排程異動：SO-2026-0813（TN-450A）因上游 Lot Hold，出貨日由 8/12 順延至 8/14；SO-2026-0819 無異動。系統已自動重排產線負荷。",
+      "todos": [],
+      "recommendations": ["此異動即 A26K1190/1191 Lot Hold 的下游影響，回覆陳課長時可一併說明", "確認業務是否已知悉並向 Nexus 客戶預告"],
+      "key_facts": [
+        { "label": "受影響訂單", "value": "SO-2026-0813（TN-450A）", "emphasis": false },
+        { "label": "出貨日異動", "value": "8/12 → 8/14", "emphasis": true },
+        { "label": "異動原因", "value": "上游 Lot Hold", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.94
+    },
+    "MAIL_023": {
+      "importance": 3,
+      "category": "Important",
+      "action_required": false,
+      "deadline": "",
+      "summary": "王經理確認 B2_ETCH 蝕刻均勻度改善案效果達標並同意結案。均勻度 1σ 由 3.8% 改善至 1.9%（-50%）、返工率 2.4% 降至 0.6%（-75%）、月度損失由 42 萬降至 10.5 萬。請 PE 補齊結案文件送品保存查，並建議報名下季改善提案競賽。",
+      "todos": [],
+      "recommendations": ["結案文件請一併確認品保存查完成，Nexus 稽核會抽查改善案的結案完整性", "月度損失減少 31.5 萬是很好的績效數字，建議納入月度營運檢討簡報"],
+      "key_facts": [
+        { "label": "均勻度 (1σ)", "value": "3.8% → 1.9%（-50%）", "emphasis": true },
+        { "label": "返工率", "value": "2.4% → 0.6%（-75%）", "emphasis": true },
+        { "label": "月度損失", "value": "NT$420K → NT$105K", "emphasis": true },
+        { "label": "狀態", "value": "經理同意結案", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.9
+    },
+    "MAIL_024": {
+      "importance": 1,
+      "category": "Info",
+      "action_required": false,
+      "deadline": "",
+      "summary": "資安室宣導近期釣魚郵件攻擊，手法為偽裝供應商報價單或人資通知誘導點擊惡意連結。提醒檢查寄件網域相似字元、勿開啟不明附件、勿點擊要求輸入帳密的連結。本月將進行社交工程演練。",
+      "todos": [],
+      "recommendations": ["近期確實有收到供應商報價郵件（宏泰科技），可順手確認寄件網域正確性"],
+      "key_facts": [
+        { "label": "攻擊手法", "value": "偽裝供應商報價單 / 人資通知", "emphasis": false },
+        { "label": "高風險附件", "value": ".zip / .htm / .js", "emphasis": false },
+        { "label": "通報專線", "value": "IT 服務台 #5911", "emphasis": false }
+      ],
+      "reply_draft": "",
+      "confidence": 0.89
+    }
+  }
+}

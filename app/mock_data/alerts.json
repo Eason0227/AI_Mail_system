@@ -1,0 +1,61 @@
+{
+  "_comment": "Mock 系統 / 設備事件。未來公司環境可能來自 FDC / SPC / EAP 資料庫，或由 LLM 從告警郵件彙整。一律經 Adapter 轉為 SystemAlert 模型。",
+  "alerts": [
+    {
+      "alert_id": "ALERT_001",
+      "equipment": "B1_SCOP_03",
+      "alert_type": "Particle OOB",
+      "description": "PM2 Chamber Particle Count 連續三日超出管制上限，Chamber Cleaning 後未見改善，疑似 O-Ring 磨損導致微漏。機台已切換 Engineering Mode。",
+      "metric_label": "OOB Rate",
+      "metric_value": "18.7%",
+      "duration": "3 Days",
+      "severity": "critical",
+      "status": "open",
+      "occurred_at": "2026-08-07T03:20:00",
+      "related_mail_id": "MAIL_002",
+      "owner": "設備工程部 / 製造技術部"
+    },
+    {
+      "alert_id": "ALERT_002",
+      "equipment": "B1_LITHO_02",
+      "alert_type": "SPC CD Shift",
+      "description": "CD 值連續 8 點同側偏移（WE Rule 2），目前平均 46.2nm，距規格上限 46.5nm 僅 0.3nm 餘裕，尚未超出規格。",
+      "metric_label": "CD Mean",
+      "metric_value": "46.2 nm",
+      "duration": "1 Day",
+      "severity": "warning",
+      "status": "monitoring",
+      "occurred_at": "2026-08-08T14:38:00",
+      "related_mail_id": "MAIL_014",
+      "owner": "製程工程部"
+    },
+    {
+      "alert_id": "ALERT_003",
+      "equipment": "B2_ETCH_01",
+      "alert_type": "EAP Connection Lost",
+      "description": "EAP 連線中斷 18 分鐘後自動恢復，期間 3 筆派工延遲已自動補送。",
+      "metric_label": "Downtime",
+      "metric_value": "18 min",
+      "duration": "已恢復",
+      "severity": "resolved",
+      "status": "resolved",
+      "occurred_at": "2026-08-09T12:03:00",
+      "related_mail_id": "MAIL_011",
+      "owner": "資訊處 / 設備工程部"
+    },
+    {
+      "alert_id": "ALERT_004",
+      "equipment": "B3_CVD_05",
+      "alert_type": "SAT 驗收延遲",
+      "description": "現場驗收進度 70%，原廠工程師簽證問題導致延遲，預計 8/13 到廠、8/16 完成，影響 Titan 專案量產轉移時程。",
+      "metric_label": "驗收進度",
+      "metric_value": "70%",
+      "duration": "延遲 4 天",
+      "severity": "warning",
+      "status": "monitoring",
+      "occurred_at": "2026-08-05T09:00:00",
+      "related_mail_id": "MAIL_019",
+      "owner": "設備工程部 / 專案管理處"
+    }
+  ]
+}

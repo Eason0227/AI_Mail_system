@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 300" width="740" height="300" font-family="Segoe UI, Microsoft JhengHei, sans-serif">
+  <rect width="740" height="300" fill="#FFFFFF"/>
+  <text x="20" y="26" font-size="14" font-weight="600" fill="#1B2434">Lot A26K1183 — Wafer Defect Map</text>
+  <text x="20" y="44" font-size="11" fill="#8B99AE">紅點為表面顆粒缺陷，缺陷分布集中於晶圓邊緣區域</text>
+
+  <g>
+    <!-- Wafer #07 -->
+    <circle cx="150" cy="165" r="82" fill="#F4F6F8" stroke="#CDD5E0" stroke-width="1.5"/>
+    <circle cx="150" cy="165" r="55" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="150" y1="247" x2="150" y2="235" stroke="#8B99AE" stroke-width="2"/>
+    <g fill="#DC2626">
+      <circle cx="96" cy="128" r="2.6"/><circle cx="112" cy="106" r="2.6"/><circle cx="139" cy="90" r="2.6"/>
+      <circle cx="172" cy="88" r="2.6"/><circle cx="200" cy="104" r="2.6"/><circle cx="216" cy="130" r="2.6"/>
+      <circle cx="221" cy="162" r="2.6"/><circle cx="214" cy="192" r="2.6"/><circle cx="196" cy="216" r="2.6"/>
+      <circle cx="168" cy="232" r="2.6"/><circle cx="136" cy="234" r="2.6"/><circle cx="108" cy="219" r="2.6"/>
+      <circle cx="88" cy="196" r="2.6"/><circle cx="80" cy="164" r="2.6"/><circle cx="104" cy="147" r="2.4"/>
+      <circle cx="126" cy="118" r="2.4"/><circle cx="186" cy="127" r="2.4"/><circle cx="199" cy="180" r="2.4"/>
+      <circle cx="152" cy="212" r="2.4"/><circle cx="116" cy="182" r="2.4"/><circle cx="163" cy="146" r="2.2"/>
+    </g>
+    <text x="150" y="278" font-size="12" font-weight="600" fill="#1B2434" text-anchor="middle">Wafer #07</text>
+    <text x="150" y="294" font-size="10" fill="#DC2626" text-anchor="middle">182 defects　良率 91.2%　NG</text>
+  </g>
+
+  <g>
+    <!-- Wafer #12 -->
+    <circle cx="370" cy="165" r="82" fill="#F4F6F8" stroke="#CDD5E0" stroke-width="1.5"/>
+    <circle cx="370" cy="165" r="55" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="370" y1="247" x2="370" y2="235" stroke="#8B99AE" stroke-width="2"/>
+    <g fill="#DC2626">
+      <circle cx="316" cy="126" r="2.8"/><circle cx="332" cy="102" r="2.8"/><circle cx="358" cy="88" r="2.8"/>
+      <circle cx="392" cy="87" r="2.8"/><circle cx="420" cy="102" r="2.8"/><circle cx="438" cy="128" r="2.8"/>
+      <circle cx="443" cy="160" r="2.8"/><circle cx="436" cy="192" r="2.8"/><circle cx="418" cy="218" r="2.8"/>
+      <circle cx="390" cy="234" r="2.8"/><circle cx="356" cy="236" r="2.8"/><circle cx="328" cy="220" r="2.8"/>
+      <circle cx="308" cy="196" r="2.8"/><circle cx="300" cy="162" r="2.8"/><circle cx="322" cy="145" r="2.6"/>
+      <circle cx="346" cy="116" r="2.6"/><circle cx="406" cy="124" r="2.6"/><circle cx="422" cy="178" r="2.6"/>
+      <circle cx="374" cy="214" r="2.6"/><circle cx="336" cy="180" r="2.6"/><circle cx="384" cy="142" r="2.6"/>
+      <circle cx="352" cy="160" r="2.6"/><circle cx="404" cy="152" r="2.6"/><circle cx="366" cy="190" r="2.6"/>
+      <circle cx="392" cy="196" r="2.4"/><circle cx="340" cy="200" r="2.4"/>
+    </g>
+    <text x="370" y="278" font-size="12" font-weight="600" fill="#1B2434" text-anchor="middle">Wafer #12</text>
+    <text x="370" y="294" font-size="10" fill="#DC2626" text-anchor="middle">241 defects　良率 88.4%　NG</text>
+  </g>
+
+  <g>
+    <!-- Wafer #19 -->
+    <circle cx="590" cy="165" r="82" fill="#F4F6F8" stroke="#CDD5E0" stroke-width="1.5"/>
+    <circle cx="590" cy="165" r="55" fill="none" stroke="#E3E8EF" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="590" y1="247" x2="590" y2="235" stroke="#8B99AE" stroke-width="2"/>
+    <g fill="#DC2626">
+      <circle cx="538" cy="132" r="2.5"/><circle cx="556" cy="108" r="2.5"/><circle cx="582" cy="92" r="2.5"/>
+      <circle cx="614" cy="94" r="2.5"/><circle cx="638" cy="112" r="2.5"/><circle cx="656" cy="138" r="2.5"/>
+      <circle cx="661" cy="168" r="2.5"/><circle cx="652" cy="198" r="2.5"/><circle cx="632" cy="220" r="2.5"/>
+      <circle cx="604" cy="232" r="2.5"/><circle cx="572" cy="230" r="2.5"/><circle cx="546" cy="212" r="2.5"/>
+      <circle cx="528" cy="188" r="2.5"/><circle cx="524" cy="160" r="2.5"/><circle cx="566" cy="150" r="2.3"/>
+      <circle cx="612" cy="146" r="2.3"/><circle cx="596" cy="196" r="2.3"/><circle cx="562" cy="186" r="2.3"/>
+    </g>
+    <text x="590" y="278" font-size="12" font-weight="600" fill="#1B2434" text-anchor="middle">Wafer #19</text>
+    <text x="590" y="294" font-size="10" fill="#DC2626" text-anchor="middle">156 defects　良率 92.7%　NG</text>
+  </g>
+</svg>

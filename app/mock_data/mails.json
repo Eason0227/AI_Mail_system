@@ -1,0 +1,452 @@
+{
+  "_comment": "Mock 郵件資料。模擬 Lotus Notes 擷取後的原始郵件（尚未經過 LLM 分析）。欄位名稱刻意與內部 Model 不同（type/content vs block_type/text），用來驗證 Adapter 轉換層確實有發揮作用。",
+  "_anchor_date": "2026-08-09",
+  "mails": [
+    {
+      "mail_id": "MAIL_001",
+      "subject": "改善報告 - B1_SCOP_03 Particle 異常",
+      "sender": { "name": "王經理", "email": "manager.wang@company.com", "title": "製造部經理", "key_person": true },
+      "to": ["user@company.com"],
+      "cc": ["ee.team@company.com", "pe.team@company.com"],
+      "datetime": "2026-08-09T10:24:00",
+      "has_attachment": true,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "張協理您好，\n\nB1_SCOP_03 這台機台的 Particle 已經連續三天超出管制上限，昨天的 OOB Rate 又拉高到 18.7%，這個狀況必須盡快收斂。" },
+        { "type": "text", "content": "附上近三日的 Particle Trend 圖，可以看得很清楚 8/07 之後整個往上抬，而且沒有回到基線的跡象：" },
+        { "type": "image", "src": "mock/images/particle_trend.svg", "caption": "圖 1：B1_SCOP_03 近七日 Particle Count Trend（紅線為 UCL）" },
+        { "type": "text", "content": "目前分析結果如下，請確認是否與您這邊掌握的一致：" },
+        { "type": "table", "columns": ["日期", "量測次數", "OOB 次數", "OOB Rate", "Max Particle"], "rows": [["2026-08-06", "48", "2", "4.2%", "38"], ["2026-08-07", "48", "6", "12.5%", "72"], ["2026-08-08", "48", "9", "18.7%", "104"]], "caption": "表 1：近三日 Particle 量測統計" },
+        { "type": "text", "content": "另外 EE 那邊回報 8/07 有做過一次 Chamber Cleaning，但看起來沒有明顯改善，這點也需要一併釐清。" },
+        { "type": "list", "items": ["請確認 Particle OOB 的真正原因", "確認目前已採取的改善措施與效果", "評估是否需要停機做完整 PM", "確認 8/07 之後投入的 Lot 是否受到影響"] },
+        { "type": "text", "content": "請在 8/14 前提供正式的改善報告給我，下週一的產能會議上我需要向副總說明。\n\n王經理" }
+      ],
+      "attachments": [
+        { "filename": "B1_SCOP_03_Particle_Raw_Data.xlsx", "type": "xlsx", "size": 428000 },
+        { "filename": "Chamber_Cleaning_Record_0807.pdf", "type": "pdf", "size": 1160000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_002",
+      "subject": "[AUTO ALERT] B1_SCOP_03 Particle Out Of Bound",
+      "sender": { "name": "FDC 監控系統", "email": "fdc-noreply@company.com", "title": "自動監控", "key_person": false },
+      "to": ["user@company.com", "ee.team@company.com"],
+      "cc": [],
+      "datetime": "2026-08-09T08:12:00",
+      "has_attachment": false,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "*** 此為系統自動發送郵件，請勿直接回覆 ***" },
+        { "type": "table", "columns": ["項目", "內容"], "rows": [["Equipment ID", "B1_SCOP_03"], ["Chamber", "PM2"], ["Parameter", "Particle Count @0.3um"], ["Spec (UCL)", "50"], ["Current Value", "104"], ["Alarm Level", "CRITICAL"], ["First Trigger", "2026-08-07 03:20"], ["Duration", "3 Days"]] },
+        { "type": "text", "content": "系統已自動將 B1_SCOP_03 切換為 Engineering Mode，後續 Lot 將自動 Skip 此機台。請相關單位盡速確認。" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_003",
+      "subject": "會議邀請：8/12 (三) 14:00 週產能檢討會議",
+      "sender": { "name": "李秘書", "email": "secretary.lee@company.com", "title": "製造部秘書", "key_person": false },
+      "to": ["user@company.com", "manager.wang@company.com", "pe.team@company.com"],
+      "cc": ["vp.lin@company.com"],
+      "datetime": "2026-08-09T09:05:00",
+      "has_attachment": true,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位主管好，\n\n本週產能檢討會議相關資訊如下：" },
+        { "type": "table", "columns": ["項目", "內容"], "rows": [["時間", "2026/08/12 (三) 14:00 - 15:30"], ["地點", "B1 三樓 第二會議室"], ["主持人", "林副總"], ["視訊", "Teams 會議室連結（見附件）"]] },
+        { "type": "text", "content": "議程：" },
+        { "type": "list", "items": ["上週產能達成率檢討（PE）", "設備稼動率與異常機台說明（EE）", "B1_SCOP_03 Particle 異常改善進度（製造技術部）", "下週投料計畫", "臨時動議"] },
+        { "type": "text", "content": "請各單位於 8/11 (二) 下班前將簡報上傳至共用資料夾。\n\n李秘書" }
+      ],
+      "attachments": [
+        { "filename": "產能檢討會議_議程.docx", "type": "docx", "size": 86000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_004",
+      "subject": "[Project Update] Titan 專案 W32 進度 - 存在時程延遲風險",
+      "sender": { "name": "陳專案經理", "email": "pm.chen@company.com", "title": "專案管理處", "key_person": true },
+      "to": ["user@company.com"],
+      "cc": ["vp.lin@company.com", "pmo@company.com"],
+      "datetime": "2026-08-09T11:40:00",
+      "has_attachment": true,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位好，\n\n附上 Titan 專案第 32 週進度報告。整體進度目前落後基準線約 9%，主要卡在設備驗收與製程參數調校兩個項目。" },
+        { "type": "image", "src": "mock/images/project_gantt.svg", "caption": "圖 1：Titan 專案時程與目前進度" },
+        { "type": "table", "columns": ["工作項目", "計畫完成", "實際進度", "狀態"], "rows": [["設備安裝", "2026-07-20", "100%", "已完成"], ["設備驗收 (SAT)", "2026-08-05", "70%", "落後"], ["製程參數調校", "2026-08-15", "35%", "落後"], ["小批量試產", "2026-08-28", "0%", "未開始"], ["量產轉移", "2026-09-15", "0%", "未開始"]] },
+        { "type": "text", "content": "風險說明：\n設備驗收延遲的主因是供應商工程師簽證問題，目前預計 8/13 才能到廠。若 8/20 前無法完成 SAT，量產轉移時程將順延至 9 月底，會影響到客戶的 Q4 出貨承諾。" },
+        { "type": "text", "content": "需要協助事項：\n請製造技術部評估是否可先以現有機台進行部分參數驗證，以壓縮後段時程。\n\n陳專案經理" }
+      ],
+      "attachments": [
+        { "filename": "Titan_W32_Progress_Report.pdf", "type": "pdf", "size": 2340000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_005",
+      "subject": "QA Report - Lot A26K1183 品質異常分析結果",
+      "sender": { "name": "黃工程師", "email": "qa.huang@company.com", "title": "品保部", "key_person": false },
+      "to": ["user@company.com", "pe.team@company.com"],
+      "cc": ["qa.team@company.com"],
+      "datetime": "2026-08-09T13:15:00",
+      "has_attachment": true,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "張協理、各位同仁：\n\nLot A26K1183 的品質異常分析已完成，結論如下。" },
+        { "type": "text", "content": "此批 Lot 於 8/07 15:30 通過 B1_SCOP_03，Wafer #7、#12、#19 在後段檢測發現表面顆粒缺陷，缺陷型態與機台 Particle 異常高度相關。" },
+        { "type": "image", "src": "mock/images/defect_map.svg", "caption": "圖 1：Wafer Defect Map（#7 / #12 / #19）" },
+        { "type": "table", "columns": ["Wafer ID", "Defect Count", "Yield", "判定"], "rows": [["#07", "182", "91.2%", "NG"], ["#12", "241", "88.4%", "NG"], ["#19", "156", "92.7%", "NG"], ["其餘 22 片", "< 30", "> 98%", "OK"]] },
+        { "type": "text", "content": "建議處置：\n三片 NG Wafer 建議直接報廢，其餘 22 片可正常流入下一站。同時建議在 B1_SCOP_03 異常收斂前，暫時不要投入高價值 Lot。\n\n詳細分析報告請見附件。\n\n黃工程師" }
+      ],
+      "attachments": [
+        { "filename": "QA_Report_A26K1183.xlsx", "type": "xlsx", "size": 764000 },
+        { "filename": "Defect_Images.zip", "type": "zip", "size": 15800000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_006",
+      "subject": "Daily Report - 2026/08/08 生產日報",
+      "sender": { "name": "MES 報表系統", "email": "mes-report@company.com", "title": "自動報表", "key_person": false },
+      "to": ["user@company.com"],
+      "cc": [],
+      "datetime": "2026-08-09T07:00:00",
+      "has_attachment": true,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "2026/08/08 生產日報自動彙整結果：" },
+        { "type": "table", "columns": ["指標", "昨日", "目標", "達成率"], "rows": [["投片量 (片)", "1,842", "1,900", "96.9%"], ["產出量 (片)", "1,795", "1,880", "95.5%"], ["整體良率", "97.8%", "98.5%", "99.3%"], ["設備稼動率", "88.4%", "92.0%", "96.1%"], ["Cycle Time (天)", "4.6", "4.2", "91.3%"]] },
+        { "type": "image", "src": "mock/images/daily_output.svg", "caption": "圖 1：近七日產出趨勢" },
+        { "type": "text", "content": "異常摘要：B1_SCOP_03 停機 4.2 小時（Particle 異常）；B2_ETCH_01 換料停機 1.5 小時。" }
+      ],
+      "attachments": [
+        { "filename": "DailyReport_20260808.xlsx", "type": "xlsx", "size": 1240000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_007",
+      "subject": "[系統公告] CIM 系統例行維護 8/15 22:00 - 8/16 02:00",
+      "sender": { "name": "IT 服務台", "email": "it-helpdesk@company.com", "title": "資訊處", "key_person": false },
+      "to": ["all-fab@company.com"],
+      "cc": [],
+      "datetime": "2026-08-09T14:30:00",
+      "has_attachment": false,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位同仁好：\n\n為提升系統穩定度，CIM 系統將進行例行維護作業。" },
+        { "type": "table", "columns": ["項目", "內容"], "rows": [["維護時間", "2026/08/15 (六) 22:00 ~ 08/16 (日) 02:00"], ["影響系統", "CIM / MES / EAP / WIP 查詢"], ["影響範圍", "無法派工、無法查詢 WIP、報表暫停產出"], ["備援方式", "請改用紙本派工單，事後補登"]] },
+        { "type": "text", "content": "維護期間如有緊急狀況，請撥打 IT 緊急專線 #5911。\n\n資訊處 敬上" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_008",
+      "subject": "廠務通知 - CDA 供應壓力調整作業",
+      "sender": { "name": "廠務部", "email": "facility@company.com", "title": "廠務部", "key_person": false },
+      "to": ["all-fab@company.com"],
+      "cc": [],
+      "datetime": "2026-08-09T15:20:00",
+      "has_attachment": false,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各單位好：\n\n因應新機台進駐，本週六 (8/15) 將進行 CDA 主管路壓力調整，由 6.5 bar 調整為 7.0 bar。" },
+        { "type": "text", "content": "調整期間 (14:00 ~ 16:00) 壓力可能出現短暫波動，請各單位確認機台是否有壓力敏感製程，如有請提前告知廠務部。" },
+        { "type": "text", "content": "聯絡窗口：廠務部 吳工程師 分機 #3372" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_009",
+      "subject": "請準備 8 月份月度營運檢討資料",
+      "sender": { "name": "林副總", "email": "vp.lin@company.com", "title": "營運副總", "key_person": true },
+      "to": ["user@company.com", "manager.wang@company.com"],
+      "cc": ["secretary.lee@company.com"],
+      "datetime": "2026-08-09T16:45:00",
+      "has_attachment": false,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位：\n\n8 月份月度營運檢討會議訂於 8/20 (四) 上午 9:00 召開，請各單位準備以下資料。" },
+        { "type": "list", "items": ["本月產能達成率與缺口分析", "重大設備異常事件檢討（含 B1_SCOP_03 Particle 案）", "良率趨勢與改善成果", "下月產能規劃與資源需求", "Titan 專案進度與風險"] },
+        { "type": "text", "content": "資料請於 8/18 (二) 中午前寄給李秘書彙整。\n\n另外，B1_SCOP_03 的問題我在會議上會特別關注，請務必準備完整的根因分析與後續預防措施，不要只給結論。\n\n林副總" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_010",
+      "subject": "報價單 - HEPA 濾網更換（B1 無塵室）",
+      "sender": { "name": "宏泰科技 業務部", "email": "sales@hongtai.com.tw", "title": "供應商", "key_person": false },
+      "to": ["user@company.com"],
+      "cc": ["purchasing@company.com"],
+      "datetime": "2026-08-09T17:10:00",
+      "has_attachment": true,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "張協理您好：\n\n感謝貴公司詢價，謹附上 B1 無塵室 HEPA 濾網更換報價，明細如下。" },
+        { "type": "table", "columns": ["品項", "規格", "數量", "單價", "小計"], "rows": [["HEPA 濾網", "610×610×292mm H14", "48", "NT$ 4,200", "NT$ 201,600"], ["安裝工資", "含拆除舊品", "48", "NT$ 800", "NT$ 38,400"], ["廢棄物處理", "-", "1", "NT$ 12,000", "NT$ 12,000"]] },
+        { "type": "text", "content": "總計：NT$ 252,000（未稅）\n交期：訂單確認後 21 個工作天\n報價有效期：30 天\n\n宏泰科技 業務部 敬上" }
+      ],
+      "attachments": [
+        { "filename": "Quotation_HEPA_20260809.pdf", "type": "pdf", "size": 486000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_011",
+      "subject": "[AUTO ALERT] B2_ETCH_01 EAP 連線中斷",
+      "sender": { "name": "EAP 監控系統", "email": "eap-noreply@company.com", "title": "自動監控", "key_person": false },
+      "to": ["user@company.com", "it-fab@company.com"],
+      "cc": [],
+      "datetime": "2026-08-09T12:03:00",
+      "has_attachment": false,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "*** 此為系統自動發送郵件，請勿直接回覆 ***" },
+        { "type": "table", "columns": ["項目", "內容"], "rows": [["Equipment ID", "B2_ETCH_01"], ["Event", "EAP Connection Lost"], ["Alarm Level", "WARNING"], ["Trigger Time", "2026-08-09 12:03"], ["Duration", "18 分鐘"], ["Auto Recovery", "成功（12:21 已恢復連線）"]] },
+        { "type": "text", "content": "連線已自動恢復，期間累積 3 筆派工延遲，系統已自動補送。" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_012",
+      "subject": "教育訓練通知 - 製程異常分析方法 (8/26)",
+      "sender": { "name": "人力資源處", "email": "hr-training@company.com", "title": "人資處", "key_person": false },
+      "to": ["all-engineer@company.com"],
+      "cc": [],
+      "datetime": "2026-08-09T09:50:00",
+      "has_attachment": false,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位同仁好：\n\n本季度技術訓練課程開放報名，資訊如下。" },
+        { "type": "table", "columns": ["項目", "內容"], "rows": [["課程名稱", "製程異常分析方法與工具應用"], ["日期", "2026/08/26 (三) 09:00-17:00"], ["地點", "行政大樓 教育訓練中心"], ["講師", "外聘 - 台大材料系 周教授"], ["名額", "30 名（額滿為止）"], ["報名截止", "2026/08/19"]] },
+        { "type": "text", "content": "請至員工入口網 > 教育訓練 > 課程報名 完成登記。\n\n人力資源處" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_013",
+      "subject": "客戶稽核準備會議 - 8/18 Nexus 現場稽核",
+      "sender": { "name": "劉品保經理", "email": "qa.liu@company.com", "title": "品保部經理", "key_person": true },
+      "to": ["user@company.com", "manager.wang@company.com", "pe.team@company.com"],
+      "cc": ["vp.lin@company.com"],
+      "datetime": "2026-08-08T16:20:00",
+      "has_attachment": true,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位主管好：\n\nNexus 客戶將於 8/18 (二) 到廠進行年度品質系統稽核，這次會特別針對設備管理與異常處理流程。" },
+        { "type": "text", "content": "稽核重點項目：" },
+        { "type": "list", "items": ["設備 PM 執行紀錄與追溯性", "製程異常處理 SOP 與實際執行落差", "OOC / OOB 事件的處置與結案紀錄", "人員訓練紀錄完整性", "客訴案件改善追蹤"] },
+        { "type": "text", "content": "請注意：B1_SCOP_03 目前的 Particle 異常一定會被問到，請務必在稽核前把改善報告與相關紀錄整理完整，包含發現時間、通報流程、處置措施、效果驗證。\n\n準備會議訂於 8/14 (五) 10:00，請各單位派員參加。\n\n劉品保經理" }
+      ],
+      "attachments": [
+        { "filename": "Nexus_Audit_Checklist_2026.xlsx", "type": "xlsx", "size": 342000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_014",
+      "subject": "[AUTO ALERT] SPC 告警 - B1_LITHO_02 CD 值偏移",
+      "sender": { "name": "SPC 系統", "email": "spc-noreply@company.com", "title": "自動監控", "key_person": false },
+      "to": ["user@company.com", "pe.team@company.com"],
+      "cc": [],
+      "datetime": "2026-08-08T14:38:00",
+      "has_attachment": false,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "*** 此為系統自動發送郵件，請勿直接回覆 ***" },
+        { "type": "table", "columns": ["項目", "內容"], "rows": [["Equipment ID", "B1_LITHO_02"], ["Parameter", "CD (Critical Dimension)"], ["Target", "45.0 nm"], ["Spec Range", "43.5 ~ 46.5 nm"], ["Current Mean", "46.2 nm"], ["Rule Violated", "Western Electric Rule 2（連續 8 點同側）"], ["Alarm Level", "WARNING"]] },
+        { "type": "image", "src": "mock/images/spc_chart.svg", "caption": "圖 1：B1_LITHO_02 CD 值 X-bar 管制圖" },
+        { "type": "text", "content": "尚未超出規格上限，但已呈現單側偏移趨勢，建議進行機台校正。" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_015",
+      "subject": "年度績效面談排程確認",
+      "sender": { "name": "人力資源處", "email": "hr-pm@company.com", "title": "人資處", "key_person": false },
+      "to": ["user@company.com"],
+      "cc": [],
+      "datetime": "2026-08-08T11:15:00",
+      "has_attachment": false,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "張協理您好：\n\n年度績效面談作業即將開始，請於 8/16 前完成以下事項。" },
+        { "type": "list", "items": ["完成自我評核表填寫（員工入口網 > 績效管理）", "確認直屬部屬的績效評核初評", "與李秘書確認面談時段（8/24 ~ 8/28）"] },
+        { "type": "text", "content": "系統將於 8/16 23:59 關閉，逾期無法補登。\n\n人力資源處" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_016",
+      "subject": "[系統通知] 您的網域密碼將於 7 天後到期",
+      "sender": { "name": "資安系統", "email": "security-noreply@company.com", "title": "資訊安全", "key_person": false },
+      "to": ["user@company.com"],
+      "cc": [],
+      "datetime": "2026-08-08T08:00:00",
+      "has_attachment": false,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "*** 此為系統自動發送郵件，請勿直接回覆 ***" },
+        { "type": "text", "content": "您的網域帳號密碼將於 2026/08/15 到期，請盡快更新。\n\n更新方式：按下 Ctrl + Alt + Del > 變更密碼\n\n密碼規則：至少 12 碼，需包含大小寫字母、數字與特殊符號，且不得與前 5 次重複。" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_017",
+      "subject": "Lot Hold 處理確認 - A26K1190 / A26K1191",
+      "sender": { "name": "陳課長", "email": "supervisor.chen@company.com", "title": "製造課課長", "key_person": true },
+      "to": ["user@company.com"],
+      "cc": ["pe.team@company.com"],
+      "datetime": "2026-08-08T09:42:00",
+      "has_attachment": false,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "協理您好：\n\n因 B1_SCOP_03 Particle 異常，目前有兩批 Lot 被系統自動 Hold：" },
+        { "type": "table", "columns": ["Lot ID", "產品", "數量", "Hold 時間", "目前站點"], "rows": [["A26K1190", "TN-450A", "25 片", "2026-08-07 22:14", "SCOP 後檢"], ["A26K1191", "TN-450A", "25 片", "2026-08-08 01:30", "SCOP 後檢"]] },
+        { "type": "text", "content": "這兩批都是 Nexus 客戶的急單，原訂 8/12 出貨。想請示是否可以先做抽檢，若結果 OK 就放行，不要整批等到機台問題解決。\n\n因為客戶那邊已經在追進度了，麻煩協理今天內給個方向。\n\n陳課長" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_018",
+      "subject": "週會會議紀錄 - 2026/08/05 製造技術部週會",
+      "sender": { "name": "李秘書", "email": "secretary.lee@company.com", "title": "製造部秘書", "key_person": false },
+      "to": ["mfg-tech@company.com"],
+      "cc": [],
+      "datetime": "2026-08-07T17:30:00",
+      "has_attachment": true,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位好：\n\n附上 8/05 製造技術部週會會議紀錄，重點決議如下。" },
+        { "type": "list", "items": ["B1 區設備 PM 週期由 90 天縮短為 60 天，自 9 月起實施", "新進工程師輪調計畫由陳課長負責規劃，8 月底前提出", "Titan 專案支援人力由 PE 部門增派 2 名，9 月起投入", "下次週會改至 8/12 (三) 下午，因應產能檢討會議調整"] },
+        { "type": "text", "content": "如有補充或更正，請於 8/09 前回覆。\n\n李秘書" }
+      ],
+      "attachments": [
+        { "filename": "週會紀錄_20260805.docx", "type": "docx", "size": 124000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_019",
+      "subject": "新機台 B3_CVD_05 驗收進度更新",
+      "sender": { "name": "吳設備工程師", "email": "ee.wu@company.com", "title": "設備工程部", "key_person": false },
+      "to": ["user@company.com", "pm.chen@company.com"],
+      "cc": ["ee.team@company.com"],
+      "datetime": "2026-08-07T15:10:00",
+      "has_attachment": true,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位好：\n\nB3_CVD_05 驗收進度更新如下。" },
+        { "type": "table", "columns": ["驗收項目", "計畫日期", "狀態", "備註"], "rows": [["機械安裝 (MAT)", "2026-07-15", "已完成", "-"], ["公用接管", "2026-07-22", "已完成", "-"], ["功能測試 (FAT)", "2026-07-30", "已完成", "-"], ["現場驗收 (SAT)", "2026-08-05", "進行中 70%", "等待原廠工程師"], ["製程認證", "2026-08-20", "未開始", "-"]] },
+        { "type": "text", "content": "SAT 卡在原廠工程師簽證，已確認 8/13 到廠，預計 8/16 可完成 SAT。\n\n吳設備工程師" }
+      ],
+      "attachments": [
+        { "filename": "B3_CVD_05_SAT_Checklist.pdf", "type": "pdf", "size": 892000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_020",
+      "subject": "環安衛月度稽核結果 - 2026 年 7 月",
+      "sender": { "name": "環安衛室", "email": "ehs@company.com", "title": "環安衛室", "key_person": false },
+      "to": ["all-manager@company.com"],
+      "cc": [],
+      "datetime": "2026-08-07T10:20:00",
+      "has_attachment": true,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位主管好：\n\n7 月份環安衛月度稽核已完成，結果彙整如下。" },
+        { "type": "table", "columns": ["稽核區域", "檢查項目", "缺失數", "評分"], "rows": [["B1 無塵室", "42", "2", "95.2"], ["B2 無塵室", "42", "1", "97.6"], ["B3 無塵室", "42", "5", "88.1"], ["化學品倉庫", "28", "0", "100.0"], ["廢水處理區", "35", "3", "91.4"]] },
+        { "type": "text", "content": "B3 區缺失較多，主要為個人防護具配戴不確實與物料堆放違規，請該區主管於 8/20 前提出改善並回覆。\n\n環安衛室" }
+      ],
+      "attachments": [
+        { "filename": "EHS_Audit_202607.pdf", "type": "pdf", "size": 1560000 }
+      ]
+    },
+    {
+      "mail_id": "MAIL_021",
+      "subject": "RE: B1_SCOP_03 Particle Trend 分析資料提供",
+      "sender": { "name": "吳設備工程師", "email": "ee.wu@company.com", "title": "設備工程部", "key_person": false },
+      "to": ["user@company.com"],
+      "cc": ["ee.team@company.com"],
+      "datetime": "2026-08-08T18:05:00",
+      "has_attachment": false,
+      "is_read": false,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "協理您好：\n\n依您要求，整理 B1_SCOP_03 近期的相關紀錄如下。" },
+        { "type": "image", "src": "mock/images/particle_trend.svg", "caption": "圖 1：Particle Count 近七日趨勢（含 Cleaning 時間點標記）" },
+        { "type": "text", "content": "幾個觀察：" },
+        { "type": "list", "items": ["8/07 03:20 首次觸發 OOB，當時剛完成一次 Wafer 更換", "8/07 14:00 執行 Chamber Cleaning，Particle 短暫下降但 6 小時後回升", "8/08 起 OOB Rate 持續攀升至 18.7%", "同期 Chamber Pressure 有輕微不穩定跡象（±3%）"] },
+        { "type": "table", "columns": ["日期", "作業項目", "執行人", "結果"], "rows": [["2026-08-05", "例行 PM", "吳工程師", "正常"], ["2026-08-07", "Chamber Cleaning", "林技術員", "短暫改善"], ["2026-08-08", "O-Ring 檢查", "吳工程師", "發現輕微磨損"]] },
+        { "type": "text", "content": "個人判斷 O-Ring 磨損導致微漏是比較可能的根因，建議安排停機更換並做完整 PM。\n\n吳設備工程師" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_022",
+      "subject": "[系統通知] 出貨排程異動 - W33 Nexus 訂單",
+      "sender": { "name": "排程系統", "email": "aps-noreply@company.com", "title": "自動排程", "key_person": false },
+      "to": ["user@company.com", "planning@company.com"],
+      "cc": [],
+      "datetime": "2026-08-07T06:30:00",
+      "has_attachment": false,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "*** 此為系統自動發送郵件，請勿直接回覆 ***" },
+        { "type": "table", "columns": ["訂單", "產品", "原出貨日", "新出貨日", "異動原因"], "rows": [["SO-2026-0813", "TN-450A", "2026-08-12", "2026-08-14", "上游 Lot Hold"], ["SO-2026-0819", "TN-380B", "2026-08-15", "2026-08-15", "無異動"]] },
+        { "type": "text", "content": "系統已自動重排產線負荷，如需人工調整請至 APS 系統操作。" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_023",
+      "subject": "上週改善案結案確認 - B2_ETCH 均勻度改善",
+      "sender": { "name": "王經理", "email": "manager.wang@company.com", "title": "製造部經理", "key_person": true },
+      "to": ["user@company.com"],
+      "cc": ["pe.team@company.com"],
+      "datetime": "2026-08-06T14:50:00",
+      "has_attachment": false,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "張協理：\n\nB2_ETCH 蝕刻均勻度改善案，經過兩週的效果追蹤，數據看起來很穩定。" },
+        { "type": "table", "columns": ["指標", "改善前", "改善後", "改善幅度"], "rows": [["均勻度 (1σ)", "3.8%", "1.9%", "-50.0%"], ["返工率", "2.4%", "0.6%", "-75.0%"], ["月度損失金額", "NT$ 420K", "NT$ 105K", "-75.0%"]] },
+        { "type": "text", "content": "效果確認達標，我這邊同意結案。請 PE 補齊結案文件後送品保存查，這個案子可以拿去參加下季的改善提案競賽。\n\n辛苦了。\n\n王經理" }
+      ],
+      "attachments": []
+    },
+    {
+      "mail_id": "MAIL_024",
+      "subject": "資訊安全宣導 - 近期釣魚郵件警示",
+      "sender": { "name": "資訊安全室", "email": "security@company.com", "title": "資訊安全室", "key_person": false },
+      "to": ["all-company@company.com"],
+      "cc": [],
+      "datetime": "2026-08-06T09:00:00",
+      "has_attachment": false,
+      "is_read": true,
+      "folder": "Inbox",
+      "content_blocks": [
+        { "type": "text", "content": "各位同仁好：\n\n近期偵測到針對本公司的釣魚郵件攻擊，手法為偽裝成供應商報價單或人資通知，誘導點擊惡意連結。" },
+        { "type": "list", "items": ["請確認寄件者網域是否正確（注意相似字元，如 rn 與 m）", "不要開啟來路不明的附件，特別是 .zip / .htm / .js", "任何要求輸入帳號密碼的連結一律不要點擊", "如已誤點，請立即通報 IT 服務台 #5911 並更改密碼"] },
+        { "type": "text", "content": "本月將進行社交工程演練，請同仁提高警覺。\n\n資訊安全室" }
+      ],
+      "attachments": []
+    }
+  ]
+}
