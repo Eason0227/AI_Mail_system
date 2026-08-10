@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>開發方法紀錄 — AI 郵件智慧決策助理</title>
+<style>
+:root{
+  --bg:#f4f6f8; --surface:#ffffff; --surface-alt:#fafbfc; --code-bg:#f1f4f8;
+  --border:#e3e8ef; --border-strong:#cdd5e0;
+  --text:#1b2434; --text-2:#5a6b85; --text-muted:#8b99ae;
+  --primary:#2563eb; --primary-soft:#eff4ff; --primary-border:#bfd3fe;
+  --danger:#dc2626; --danger-soft:#fef0f0;
+  --warning:#ea8a0b; --warning-soft:#fff6e9;
+  --success:#12945f; --success-soft:#eaf7f1;
+  --purple:#7c4deb; --purple-soft:#f4f0fe; --purple-border:#dccffb;
+  --radius:10px; --radius-sm:6px;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]){
+    --bg:#12161d; --surface:#181d26; --surface-alt:#1d232e; --code-bg:#11151c;
+    --border:#2a323f; --border-strong:#3a4453;
+    --text:#e8edf4; --text-2:#a9b6c8; --text-muted:#78869a;
+    --primary:#5b8dff; --primary-soft:#1a2740; --primary-border:#31456b;
+    --danger:#f87171; --danger-soft:#33191b;
+    --warning:#f0a13c; --warning-soft:#332510;
+    --success:#3ec48c; --success-soft:#122c22;
+    --purple:#a685f5; --purple-soft:#241d3a; --purple-border:#3d3163;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 1px 3px rgba(0,0,0,.2);
+  }
+}
+:root[data-theme=dark]{
+  --bg:#12161d; --surface:#181d26; --surface-alt:#1d232e; --code-bg:#11151c;
+  --border:#2a323f; --border-strong:#3a4453;
+  --text:#e8edf4; --text-2:#a9b6c8; --text-muted:#78869a;
+  --primary:#5b8dff; --primary-soft:#1a2740; --primary-border:#31456b;
+  --danger:#f87171; --danger-soft:#33191b;
+  --warning:#f0a13c; --warning-soft:#332510;
+  --success:#3ec48c; --success-soft:#122c22;
+  --purple:#a685f5; --purple-soft:#241d3a; --purple-border:#3d3163;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 1px 3px rgba(0,0,0,.2);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:"Inter","Noto Sans TC",-apple-system,BlinkMacSystemFont,
+              "Segoe UI","Microsoft JhengHei",sans-serif;
+  line-height:1.75; font-size:15px;
+}
+.page{max-width:920px; margin:0 auto; padding:44px 28px 100px}
+
+header.top{border-bottom:1px solid var(--border); padding-bottom:22px; margin-bottom:34px}
+header.top h1{font-size:27px; margin:0 0 6px; font-weight:700; letter-spacing:-.3px}
+header.top .sub{color:var(--text-2); margin:0; font-size:15px}
+header.top .meta{margin-top:12px; font-size:12.5px; color:var(--text-muted)}
+
+h2{font-size:21px; margin:44px 0 6px; font-weight:700; padding-bottom:9px;
+   border-bottom:1px solid var(--border)}
+h3{font-size:16px; margin:28px 0 10px; font-weight:700}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 14px; padding-left:22px} li{margin-bottom:6px}
+a{color:var(--primary)}
+.lead{font-size:16px; color:var(--text-2); margin-bottom:22px}
+
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:.875em;
+     background:var(--code-bg); padding:2px 6px; border-radius:4px;
+     border:1px solid var(--border); white-space:nowrap}
+pre{background:var(--code-bg); border:1px solid var(--border); border-radius:var(--radius);
+    padding:14px 16px; overflow-x:auto; margin:0 0 16px; line-height:1.6}
+pre code{background:none;border:none;padding:0;font-size:12.5px;white-space:pre}
+
+.note{border-left:3px solid var(--primary); background:var(--primary-soft);
+      border-radius:var(--radius-sm); padding:12px 16px; margin:0 0 18px; font-size:14px}
+.note.warn{border-left-color:var(--warning); background:var(--warning-soft)}
+.note.ok{border-left-color:var(--success); background:var(--success-soft)}
+.note .t{font-weight:700; display:block; margin-bottom:4px; font-size:13px}
+
+.tbl-wrap{overflow-x:auto; margin:0 0 18px}
+table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:460px}
+th,td{border:1px solid var(--border); padding:8px 12px; text-align:left; vertical-align:top}
+th{background:var(--surface-alt); font-weight:700; white-space:nowrap}
+td.num,th.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+
+.grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      margin:0 0 20px}
+.stat{background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--primary);
+      border-radius:var(--radius); box-shadow:var(--shadow); padding:14px 16px}
+.stat .k{font-size:12px; color:var(--text-2); font-weight:600}
+.stat .v{font-size:25px; font-weight:700; line-height:1.25; margin:2px 0;
+         font-variant-numeric:tabular-nums}
+.stat .d{font-size:11.5px; color:var(--text-muted)}
+
+/* 橫條圖 */
+.bars{margin:0 0 18px}
+.bar-row{display:flex; align-items:center; gap:10px; margin-bottom:6px; font-size:13px}
+.bar-row .lbl{flex:0 0 120px; color:var(--text-2); text-align:right}
+.bar-row .track{flex:1; background:var(--surface-alt); border-radius:3px; height:18px;
+                border:1px solid var(--border); overflow:hidden}
+.bar-row .fill{height:100%; background:var(--primary); border-radius:2px 0 0 2px}
+.bar-row .val{flex:0 0 52px; font-variant-numeric:tabular-nums; color:var(--text-muted);
+              font-size:12px}
+
+figure{margin:0 0 20px}
+figure svg{width:100%; height:auto; display:block; background:var(--surface);
+           border:1px solid var(--border); border-radius:var(--radius)}
+figcaption{font-size:12px; color:var(--text-muted); text-align:center; margin-top:8px}
+
+.toggle{position:fixed; top:16px; right:20px; z-index:50; cursor:pointer;
+        background:var(--surface); border:1px solid var(--border-strong);
+        border-radius:var(--radius-sm); padding:6px 12px; font-size:12px;
+        color:var(--text-2); font-family:inherit}
+footer{border-top:1px solid var(--border); margin-top:46px; padding-top:20px;
+       font-size:12.5px; color:var(--text-muted)}
+@media (max-width:640px){
+  .page{padding:28px 18px 60px}
+  .bar-row .lbl{flex:0 0 88px; font-size:12px}
+  .toggle{top:auto; bottom:16px}
+}
+</style>
+</head>
+<body>
+<button class="toggle" id="themeBtn" type="button">◐ 主題</button>
+<div class="page">
+
+<header class="top">
+  <h1>開發方法紀錄</h1>
+  <p class="sub">AI 郵件智慧決策助理 — 以 Claude Code 進行的兩階段開發實錄</p>
+  <p class="meta">
+    紀錄期間 2026-08-09 → 2026-08-10　·　數據來源：Claude Code session 逐字記錄（<code>.jsonl</code>）
+  </p>
+</header>
+
+<p class="lead">
+  這份紀錄的用途是回答「用 AI 協作開發一個中型專案，實際成本與流程長什麼樣」。
+  所有數字都從 Claude Code 的 session 逐字記錄直接統計，不是估算。
+</p>
+
+<!-- ═════════════ 總覽 ═════════════ -->
+<h2>1. 總覽</h2>
+
+<div class="grid">
+  <div class="stat">
+    <div class="k">總 token</div><div class="v">84.2 M</div>
+    <div class="d">輸入 83.9 M ＋ 輸出 392 K</div>
+  </div>
+  <div class="stat" style="border-top-color:var(--purple)">
+    <div class="k">產出程式碼</div><div class="v">8,813 行</div>
+    <div class="d">53 個 Python 檔</div>
+  </div>
+  <div class="stat" style="border-top-color:var(--success)">
+    <div class="k">使用者訊息</div><div class="v">23</div>
+    <div class="d">兩個 session 合計</div>
+  </div>
+  <div class="stat" style="border-top-color:var(--warning)">
+    <div class="k">工具呼叫</div><div class="v">365</div>
+    <div class="d">讀寫檔案、執行指令、驗證</div>
+  </div>
+</div>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr>
+    <th>Session</th><th>期間</th><th class="num">時長</th>
+    <th class="num">你的訊息</th><th class="num">工具呼叫</th>
+    <th class="num">輸出 token</th><th class="num">總 token</th>
+  </tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>S1</strong> 骨架與資料層</td>
+      <td>08-09 15:27–15:52</td>
+      <td class="num">25 分</td><td class="num">6</td><td class="num">55</td>
+      <td class="num">82,998</td><td class="num">2,282,133</td>
+    </tr>
+    <tr>
+      <td><strong>S2</strong> UI、真實資料整合</td>
+      <td>08-10 10:44–17:11</td>
+      <td class="num">6 時 27 分</td><td class="num">17</td><td class="num">310</td>
+      <td class="num">309,391</td><td class="num">81,961,050</td>
+    </tr>
+    <tr style="background:var(--surface-alt);font-weight:700">
+      <td>合計</td><td>—</td><td class="num">約 6.9 時</td>
+      <td class="num">23</td><td class="num">365</td>
+      <td class="num">392,389</td><td class="num">84,243,183</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note">
+  <span class="t">時間是掛鐘時間，不是專注工時</span>
+  S2 的 6.5 小時包含等待編譯、等待伺服器啟動、以及使用者離開的空檔。
+</div>
+
+<!-- ═════════════ token 結構 ═════════════ -->
+<h2>2. token 都花在哪裡</h2>
+
+<p>
+  最反直覺的一點：<strong>輸出只佔總量的 0.47%</strong>。
+  真正的消耗來自每次 API 呼叫都要重送整份對話。
+</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>類別</th><th class="num">token</th><th class="num">佔比</th><th>說明</th></tr></thead>
+  <tbody>
+    <tr><td>快取讀取</td><td class="num">82,773,141</td><td class="num">98.3%</td><td>重送已快取的對話上下文，單價最低</td></tr>
+    <tr><td>快取寫入</td><td class="num">1,071,621</td><td class="num">1.27%</td><td>新增內容首次寫入快取</td></tr>
+    <tr><td>輸出</td><td class="num">392,389</td><td class="num">0.47%</td><td>程式碼、說明、思考</td></tr>
+    <tr><td>未快取輸入</td><td class="num">6,032</td><td class="num">0.01%</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+
+<figure>
+  <svg viewBox="0 0 820 96" role="img" aria-label="token 組成比例">
+    <rect x="20" y="26" width="740" height="30" rx="4" fill="var(--primary)"/>
+    <rect x="760" y="26" width="10" height="30" fill="var(--purple)"/>
+    <rect x="770" y="26" width="4" height="30" fill="var(--success)"/>
+    <text x="390" y="46" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff">
+      快取讀取 98.3%
+    </text>
+    <text x="700" y="76" font-size="11.5" fill="var(--text-muted)">快取寫入 1.3%</text>
+    <text x="700" y="18" font-size="11.5" fill="var(--text-muted)">輸出 0.47%</text>
+    <line x1="772" y1="24" x2="772" y2="12" stroke="var(--text-muted)" stroke-width="1"/>
+    <line x1="765" y1="58" x2="765" y2="68" stroke="var(--text-muted)" stroke-width="1"/>
+  </svg>
+  <figcaption>對話越長，每一次呼叫的固定成本越高</figcaption>
+</figure>
+
+<h3>單次呼叫的平均上下文</h3>
+<pre><code>S1    31 次呼叫 ÷ 2,199,135 輸入 token  =  平均 70,940 / 次
+S2   308 次呼叫 ÷ 81,651,659 輸入 token =  平均 265,102 / 次   ← 3.7 倍</code></pre>
+<p>
+  S2 的總量是 S1 的 36 倍，但輸出只有 3.7 倍。
+  差距全部來自「對話變長」× 「呼叫變多」的乘積效應。
+</p>
+
+<div class="note warn">
+  <span class="t">對成本的實務啟示</span>
+  減少 token 最有效的方式不是「少寫程式」，而是<strong>把長任務切成獨立的 session</strong>。
+  同一個 session 內每多問一輪，前面所有內容都會再被計費一次。
+</div>
+
+<!-- ═════════════ 工作型態 ═════════════ -->
+<h2>3. 工作型態：讀與驗證多於寫</h2>
+
+<div class="bars">
+  <div class="bar-row"><span class="lbl">Bash</span>
+    <span class="track"><span class="fill" style="width:100%"></span></span><span class="val">128</span></div>
+  <div class="bar-row"><span class="lbl">Edit</span>
+    <span class="track"><span class="fill" style="width:77.3%;background:var(--purple)"></span></span><span class="val">99</span></div>
+  <div class="bar-row"><span class="lbl">Write</span>
+    <span class="track"><span class="fill" style="width:61.7%;background:var(--success)"></span></span><span class="val">79</span></div>
+  <div class="bar-row"><span class="lbl">Read</span>
+    <span class="track"><span class="fill" style="width:24.2%;background:var(--warning)"></span></span><span class="val">31</span></div>
+  <div class="bar-row"><span class="lbl">其他</span>
+    <span class="track"><span class="fill" style="width:22%;background:var(--text-muted)"></span></span><span class="val">28</span></div>
+</div>
+
+<p>
+  <strong>Bash 是使用最多的工具（128 次，35%）</strong>，而且幾乎全部用於驗證而非建置：
+  逐頁編譯檢查、跑 State 全流程測試、掃描機敏資料、比對統計數字、HTTP 探測路由。
+</p>
+
+<p>
+  <code>Edit</code>（99）多於 <code>Write</code>（79），代表大部分工作是
+  <strong>在既有檔案上迭代</strong>，而不是一次寫成。改最多次的檔案：
+</p>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>檔案</th><th class="num">Edit 次數</th><th>為什麼反覆修改</th></tr></thead>
+  <tbody>
+    <tr><td><code>ai_analysis.py</code></td><td class="num">11</td><td>AI 面板要同時支援兩種資料來源的欄位差異</td></tr>
+    <tr><td><code>app_state.py</code></td><td class="num">11</td><td>日期切換、草稿狀態、跨頁開信陸續加入</td></tr>
+    <tr><td><code>real_mail_repository.py</code></td><td class="num">8</td><td>真實資料的結構逐步釐清後多次重構</td></tr>
+    <tr><td><code>step_c_mail_summary.py</code></td><td class="num">8</td><td>擴充 LLM 輸出欄位與防幻覺處理</td></tr>
+    <tr><td><code>config.py</code></td><td class="num">6</td><td>路徑策略從寫死改為自動搜尋</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ═════════════ 兩階段 ═════════════ -->
+<h2>4. 兩個 session 的性質差異</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th style="width:16%">面向</th><th style="width:42%">S1 — 從零建立</th><th>S2 — 整合與收斂</th></tr></thead>
+  <tbody>
+    <tr><td>主要動作</td><td>Write 26 次 / Edit 3 次</td><td>Write 53 次 / Edit 96 次</td></tr>
+    <tr><td>產出</td><td>約 1,300 行（設定、模型、Mock 資料、Adapter）</td><td>約 7,500 行 ＋ 兩份文件</td></tr>
+    <tr><td>token 效率</td><td>83 K 輸出 / 1,300 行</td><td>309 K 輸出 / 7,500 行</td></tr>
+    <tr><td>時間分佈</td><td>幾乎全在產生內容</td><td>大量時間在讀取既有資料與驗證</td></tr>
+    <tr><td>不確定性</td><td>低（規格已定，照著寫）</td><td>高（真實資料的格式要現場摸索）</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+  S1 的 25 分鐘產出 1,300 行、只用 83 K 輸出 token——因為那是「照規格寫新檔案」，
+  沒有未知數。S2 則有大量 token 花在<strong>不產生程式碼的活動</strong>：
+</p>
+<ul>
+  <li>讀取既有的擷取分析 pipeline 原始碼</li>
+  <li>統計 64 封真實郵件與 64 份分析結果，歸納實際 Schema</li>
+  <li>每次改動後重跑兩種資料模式 × 15 條路由的編譯檢查</li>
+  <li>逐條驗證告警主旨解析（48/52 命中，4 筆確認為上游誤判）</li>
+  <li>推送前掃描機敏資料</li>
+</ul>
+<p>這些不產生程式碼，但它們是「敢說兩模式都通過」的依據。</p>
+
+<!-- ═════════════ 方法 ═════════════ -->
+<h2>5. 有效的做法</h2>
+
+<h3>先定介面，再填實作</h3>
+<p>
+  S1 結束在「抽象介面剛定義完，還沒有任何實作」。這個中斷點看似尷尬，
+  實際上讓 S2 接手時沒有任何架構爭議——合約已經寫死，只要填空。
+</p>
+
+<h3>把驗證做成一行指令</h3>
+<p>
+  不需要啟動伺服器就能逐頁編譯，是整個專案最有價值的一條指令。
+  它把「改了會不會壞」從幾分鐘縮短到幾秒：
+</p>
+<pre><code>python -c "import app.main as m; [m.app._compile_page(r, save_page=False) for r in m.app._unevaluated_pages]"</code></pre>
+<p>
+  同理，一支獨立的 State 流程腳本可以在不開瀏覽器的情況下，
+  跑完「載入 → 搜尋 → 篩選 → 選信 → 產生草稿 → 勾待辦 → 問答 → 跨頁跳轉」全鏈路。
+</p>
+
+<h3>每個決定都留下理由</h3>
+<p>
+  程式碼註解不只寫「做了什麼」，而是寫「為什麼這樣做、以及不能怎麼改」。
+  例如欄位為何叫 <code>list_items</code> 而不是 <code>items</code>、
+  為何顯示用的值要預先算好而不用 <code>@property</code>。
+  這讓跨 session 接手時不需要重新推導。
+</p>
+
+<h3>用真實資料反推規格</h3>
+<p>
+  真實資料接上之前，先統計 64 封郵件的欄位覆蓋率、分類分佈與格式變異，
+  再決定 Adapter 怎麼寫。這一步找出了幾個從規格看不出來的問題：
+  寄件者有四種格式、告警信本文是空的、三級 priority 直接映射會讓「重要郵件」永遠是 0。
+</p>
+
+<!-- ═════════════ 教訓 ═════════════ -->
+<h2>6. 踩到的坑</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th style="width:26%">問題</th><th style="width:38%">徵狀</th><th>教訓</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>欄位名撞框架保留字</td>
+      <td>錯誤訊息完全不提名稱衝突</td>
+      <td>框架的 Var 物件有自己的方法，資料欄位不可同名</td>
+    </tr>
+    <tr>
+      <td>圖示標籤傳入動態值</td>
+      <td>與上者相同的錯誤訊息</td>
+      <td>編譯期才能決定的參數不能傳執行期的值</td>
+    </tr>
+    <tr>
+      <td>路徑寫死</td>
+      <td>換一台電腦就失效</td>
+      <td>改為環境變數優先、否則自動搜尋</td>
+    </tr>
+    <tr>
+      <td>統計基準在建構時算死</td>
+      <td>切換檢視日期後數字不更新</td>
+      <td>會變動的基準要做成動態讀取</td>
+    </tr>
+    <tr>
+      <td>空欄位當成產生失敗</td>
+      <td>按鈕按下後出現無說明的空白框</td>
+      <td>「沒有資料」與「還沒產生」是兩種狀態</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note ok">
+  <span class="t">最有價值的一次修正</span>
+  真實資料接上後才發現：上游不提供回覆草稿欄位，但介面仍顯示可編輯的空白框。
+  這種問題只有<strong>實際跑真資料</strong>才會浮現，Mock 資料永遠測不出來。
+</div>
+
+<!-- ═════════════ 效率 ═════════════ -->
+<h2>7. 效率換算</h2>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr><th>指標</th><th class="num">數值</th></tr></thead>
+  <tbody>
+    <tr><td>每行程式碼的輸出 token</td><td class="num">約 45</td></tr>
+    <tr><td>每則使用者訊息產出的程式碼</td><td class="num">約 383 行</td></tr>
+    <tr><td>每則使用者訊息的工具呼叫</td><td class="num">約 16 次</td></tr>
+    <tr><td>輸出 token 佔總量</td><td class="num">0.47%</td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+  「每則訊息 383 行」這個數字要小心解讀——它包含大量既有檔案的重寫，
+  且不代表可以無限拉高。訊息數少的真正原因是<strong>每則訊息帶的資訊量高</strong>：
+  完整的需求規格、明確的檔案路徑、以及對前次結果的具體回饋。
+</p>
+
+<footer>
+  <p>
+    數據自 Claude Code 的 session 逐字記錄統計。
+    同一則助理訊息可能分多行寫入，統計 token 時依訊息 ID 去重，
+    統計工具呼叫時則逐一計算——兩者的處理方式不同，混用會得到錯誤結果。
+  </p>
+  <p>本文件不含任何真實郵件內容、憑證或個人資料。</p>
+</footer>
+
+</div>
+<script>
+(function(){
+  var root=document.documentElement, saved=null;
+  try{ saved=localStorage.getItem('doc-theme'); }catch(e){}
+  if(saved) root.setAttribute('data-theme',saved);
+  document.getElementById('themeBtn').addEventListener('click',function(){
+    var dark = root.getAttribute('data-theme')==='dark' ||
+      (!root.getAttribute('data-theme') &&
+       window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var next = dark ? 'light' : 'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('doc-theme',next); }catch(e){}
+  });
+})();
+</script>
+</body>
+</html>
